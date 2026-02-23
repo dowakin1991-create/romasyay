@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v19</title>
+    <title>Ромасяй Cloud v20</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -29,47 +29,48 @@
         .theme-black-red { --bg-grad-1: #2a0808; --bg-grad-2: #000000; --text-main: #fecaca; --primary: #f87171; }
         .theme-green-black { --bg-grad-1: #064e3b; --bg-grad-2: #020617; --text-main: #a7f3d0; --primary: #34d399; }
 
-        /* ФІКС БІЛОЇ ПОЛОСИ: заповнюємо весь простір градієнтом */
-        html { height: 100%; background: var(--bg-grad-1); }
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg-grad-1); /* Фікс білої полоси */
+        }
         body { 
             background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%) no-repeat fixed; 
             font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; 
-            color: var(--text-main); position: fixed; width: 100%; height: 100%; 
-            overflow: hidden; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; 
+            color: var(--text-main); width: 100%; 
+            user-select: none; -webkit-user-select: none; 
         }
 
         .glass { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
         .ios-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .ios-card:active { transform: scale(0.94); opacity: 0.8; }
 
-        .app-screen { display: none; height: 100dvh; width: 100vw; position: absolute; top: 0; left: 0; flex-direction: column; }
+        .app-screen { display: none; min-height: 100dvh; width: 100vw; flex-direction: column; }
         .app-screen.active { display: flex; animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
         
-        /* ВІДСТУПИ ДЛЯ ШАПКИ (iOS Safe Areas) */
+        /* Стандартний відступ для основного екрану */
         .safe-pt { padding-top: calc(env(safe-area-inset-top) + 0.5rem); }
-        .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         
-        /* ОКРЕМИЙ ФІКС ДЛЯ НАЛАШТУВАНЬ */
-        #settingsScreen header, #archiveScreen header, #aboutScreen header { 
-            padding-top: calc(env(safe-area-inset-top) + 1.2rem); 
-            height: auto; min-height: 90px;
+        /* СПЕЦІАЛЬНИЙ ВІДСТУП ДЛЯ НАЛАШТУВАНЬ ТА АРХІВУ (нижче стрілка) */
+        .settings-header { 
+            padding-top: calc(env(safe-area-inset-top) + 1.2rem) !important; 
+            padding-bottom: 1rem;
         }
 
         .icon-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
         .icon-btn svg { width: 24px; height: 24px; stroke-width: 3px; }
 
-        .toggle-checkbox:checked { right: 0; border-color: var(--primary); } 
-        .toggle-checkbox:checked + .toggle-label { background-color: var(--primary); }
-        .unit-select { appearance: none; background: rgba(0, 122, 255, 0.1); padding: 2px 8px; border-radius: 8px; font-weight: 800; color: var(--primary); }
+        #splashScreen.splash-hide { opacity: 0; pointer-events: none; transition: 0.5s; }
     </style>
 </head>
 <body class="theme-white">
     <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/5 backdrop-blur-2xl flex flex-col items-center justify-center z-[9999]">
         <img src="https://iili.io/qKRx5xI.png" class="w-40 h-40 object-contain rounded-3xl shadow-xl animate-pulse">
-        <div class="mt-8 px-6 py-3 glass rounded-full font-black text-sm animate-bounce" data-i18n="tapToStart">👆 ТОРКНІТЬСЯ</div>
+        <div class="mt-8 px-6 py-3 glass rounded-full font-black text-sm animate-bounce">👆 ТОРКНІТЬСЯ</div>
     </div>
 
     <div id="menuScreen" class="app-screen">
@@ -77,7 +78,7 @@
             <div class="flex justify-between items-center mb-6">
                 <div id="userBadgeContainer" class="hidden flex items-center">
                     <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-3 py-1.5 rounded-full uppercase shadow-sm"></span>
-                    <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-2" data-i18n="logout">Вийти</button>
+                    <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-2">Вийти</button>
                 </div>
                 <div class="flex-1"></div>
                 <button onclick="nav('settingsScreen')" class="glass w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm">🎨</button>
@@ -88,10 +89,10 @@
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <button onclick="startInventoryFlow()" class="glass p-8 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card col-span-2 shadow-sm bg-[var(--primary)]/5">
-                    <span class="text-4xl">📝</span><span class="font-black text-lg" data-i18n="newInv">Почати</span>
+                    <span class="text-4xl">📝</span><span class="font-black text-lg">Почати</span>
                 </button>
-                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black" data-i18n="archive">Архів</span></button>
-                <button onclick="nav('settingsScreen')" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black" data-i18n="settings">Опції</span></button>
+                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black">Архів</span></button>
+                <button onclick="nav('settingsScreen')" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black">Опції</span></button>
             </div>
         </div>
     </div>
@@ -115,8 +116,8 @@
                     <button onclick="openAddModal()" class="w-10 h-10 bg-emerald-500 text-white rounded-full text-2xl font-light shadow-lg">+</button>
                 </div>
             </div>
-            <div id="searchBarContainer" class="search-collapsed px-5"><input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/40 dark:bg-black/20 rounded-2xl p-3 outline-none font-bold mt-2" onkeyup="render()"></div>
-            <div class="w-full overflow-x-auto hide-scrollbar flex gap-2 px-5 mt-4" id="categoryTabs"></div>
+            <div id="searchBarContainer" class="px-5 hidden"><input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/40 dark:bg-black/20 rounded-2xl p-3 outline-none font-bold mt-2" onkeyup="render()"></div>
+            <div class="w-full overflow-x-auto flex gap-2 px-5 mt-4" id="categoryTabs"></div>
         </header>
         <main class="scroll-area px-4 pt-6 space-y-4">
             <div class="glass rounded-[30px] p-4 flex justify-between items-center bg-[var(--primary)]/5">
@@ -126,7 +127,7 @@
                 </div>
                 <div class="flex gap-3">
                     <button onclick="sendToTelegram()" class="glass w-12 h-12 flex items-center justify-center rounded-2xl text-xl">✈️</button>
-                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-lg relative">💾<span class="absolute -top-1 -right-1 flex h-4 w-4"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 text-[8px] flex items-center justify-center border-2 border-white">☁️</span></span></button>
+                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-lg relative">💾</button>
                 </div>
             </div>
             <div id="lst" class="space-y-3"></div>
@@ -134,7 +135,7 @@
     </div>
 
     <div id="settingsScreen" class="app-screen">
-        <header class="glass pb-3 rounded-b-[40px] shadow-sm z-50 flex items-center px-4">
+        <header class="glass rounded-b-[40px] shadow-sm z-50 flex items-center px-4 settings-header">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
             <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Налаштування</span>
         </header>
@@ -145,32 +146,21 @@
             </div>
             <div class="glass p-6 rounded-[35px]">
                 <h3 class="font-bold mb-4">Тема</h3>
-                <div class="grid grid-cols-5 gap-3 mb-6">
-                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-slate-100" onclick="setTheme('theme-white', false)"></button>
-                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-pink-100" onclick="setTheme('theme-pink', false)"></button>
-                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-yellow-100" onclick="setTheme('theme-lemon', false)"></button>
-                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-blue-100" onclick="setTheme('theme-blue', false)"></button>
-                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-gradient-to-r from-blue-200 to-yellow-100" onclick="setTheme('theme-blue-yellow', false)"></button>
-                </div>
-                <div class="flex gap-4">
-                    <button class="w-12 h-12 rounded-full border-2 border-gray-600 bg-slate-900 shadow-xl" onclick="setTheme('theme-black-blue', true)"></button>
-                    <button class="w-12 h-12 rounded-full border-2 border-gray-600 bg-red-950 shadow-xl" onclick="setTheme('theme-black-red', true)"></button>
-                    <button class="w-12 h-12 rounded-full border-2 border-gray-600 bg-emerald-950 shadow-xl" onclick="setTheme('theme-green-black', true)"></button>
-                </div>
+                <div class="grid grid-cols-5 gap-3 mb-6" id="themeGrid"></div>
             </div>
         </main>
     </div>
 
     <div id="archiveScreen" class="app-screen">
-        <header class="glass pb-3 rounded-b-[40px] shadow-sm z-50 flex items-center px-4">
+        <header class="glass rounded-b-[40px] shadow-sm z-50 flex items-center px-4 settings-header">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-            <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Хмарний Архів</span>
+            <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Архів</span>
         </header>
         <div id="arcView" class="scroll-area px-4 pt-6 space-y-4"></div>
     </div>
 
-    <div id="addModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-8 backdrop-blur-md z-[10000] opacity-0 transition-opacity duration-300">
-        <div class="w-full glass p-8 rounded-[40px] space-y-6 scale-90 transition-transform duration-300" id="modalContent">
+    <div id="addModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-8 backdrop-blur-md z-[10000]">
+        <div class="w-full glass p-8 rounded-[40px] space-y-6">
             <h2 class="text-2xl font-black text-center text-emerald-500">Новий товар</h2>
             <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-4 glass rounded-2xl outline-none font-bold text-center">
             <select id="newItemUnit" class="w-full p-4 glass rounded-2xl outline-none font-bold text-center"><option>кг</option><option>шт</option><option>л</option><option>мл</option></select>
@@ -195,14 +185,12 @@
             document.documentElement.className = settings.isDark ? 'dark' : 'light';
             document.body.className = settings.theme;
             document.getElementById('theme-color-meta').content = settings.isDark ? "#020617" : "#f8fafc";
-            // Оновлення кнопки звуку
             document.getElementById('soundBtn').classList.toggle('bg-blue-500', settings.sound);
             document.getElementById('soundDot').style.left = settings.sound ? '26px' : '4px';
         }
 
-        function setTheme(t, d) { settings.theme = t; settings.isDark = d; saveSettings(); applyTheme(); }
-        function toggleSetting(k) { settings[k] = !settings[k]; saveSettings(); applyTheme(); if(settings.sound) playNeutralClick(); }
-        function saveSettings() { localStorage.setItem('romasyay_settings', JSON.stringify(settings)); }
+        function setTheme(t, d) { settings.theme = t; settings.isDark = d; localStorage.setItem('romasyay_settings', JSON.stringify(settings)); applyTheme(); }
+        function toggleSetting(k) { settings[k] = !settings[k]; localStorage.setItem('romasyay_settings', JSON.stringify(settings)); applyTheme(); if(settings.sound) playNeutralClick(); }
 
         function nav(s) { document.querySelectorAll('.app-screen').forEach(e => e.classList.remove('active')); document.getElementById(s).classList.add('active'); if(settings.sound) playNeutralClick(); }
         function dismissSplash() { document.getElementById('splashScreen').classList.add('splash-hide'); nav('menuScreen'); }
@@ -221,10 +209,11 @@
             if(q) f = f.filter(p => p.n.toLowerCase().includes(q));
 
             document.getElementById('lst').innerHTML = f.sort((a,b)=>a.n.localeCompare(b.n,'uk')).map((p, i) => `
-                <div class="glass rounded-[30px] p-5 animate-fade-in"><div class="flex justify-between items-start mb-4"><div><span class="text-[10px] font-black uppercase opacity-30 tracking-widest">${p.u}</span><h3 class="text-lg font-black leading-tight">${p.n}</h3></div><div class="text-3xl font-black text-[var(--primary)]">${vals[p.n]||0}</div></div><div class="flex gap-3"><input type="number" id="inp-${i}" placeholder="0" class="w-full rounded-2xl p-4 text-center font-black text-xl bg-white/40 dark:bg-black/20 outline-none" onkeydown="if(event.key==='Enter')confirmBtn('${p.n}','inp-${i}')"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-8 rounded-2xl text-2xl shadow-lg">✓</button></div></div>`).join('');
+                <div class="glass rounded-[30px] p-5"><div class="flex justify-between items-start mb-4"><div><span class="text-[10px] font-black uppercase opacity-30 tracking-widest">${p.u}</span><h3 class="text-lg font-black leading-tight">${p.n}</h3></div><div class="text-3xl font-black text-[var(--primary)]">${vals[p.n]||0}</div></div><div class="flex gap-3"><input type="number" id="inp-${i}" placeholder="0" class="w-full rounded-2xl p-4 text-center font-black text-xl bg-white/40 dark:bg-black/20 outline-none"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-8 rounded-2xl text-2xl shadow-lg">✓</button></div></div>`).join('');
         }
 
         function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value='';if(settings.sound)playNeutralClick();render();}}
+        function startInventoryFlow() { if(currentUser) nav('inventoryScreen'); else nav('specialistScreen'); }
         function setUserAndStart(n) { currentUser = n; document.getElementById('displayUserMenu').innerText = n; document.getElementById('displayUser').innerText = n; document.getElementById('userBadgeContainer').classList.remove('hidden'); nav('inventoryScreen'); render(); }
         function logout() { currentUser = ""; document.getElementById('userBadgeContainer').classList.add('hidden'); nav('menuScreen'); }
         
@@ -247,9 +236,9 @@
 
         function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(5); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
         function playPianoSuccess() { try { let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523,659,1046].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
-        function openAddModal() { const m=document.getElementById('addModal'); m.classList.remove('hidden'); setTimeout(()=> { m.classList.replace('opacity-0','opacity-100'); document.getElementById('modalContent').classList.replace('scale-90','scale-100'); },10); }
-        function closeAddModal() { const m=document.getElementById('addModal'); m.classList.replace('opacity-100','opacity-0'); document.getElementById('modalContent').classList.replace('scale-100','scale-90'); setTimeout(()=>m.classList.add('hidden'),300); }
-        function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('search-expanded'); c.classList.toggle('search-collapsed'); if(!c.classList.contains('search-collapsed')) document.getElementById('s').focus(); }
+        function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
+        function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('hidden'); if(!c.classList.contains('hidden')) document.getElementById('s').focus(); }
         function downloadExcel(id) { let a=JSON.parse(localStorage.getItem('romasyay_arc')),i=a.find(x=>x.id===id); let d=[["Товар","Кількість","Од."]]; i.items.forEach(x=>d.push([x.n,x.v,x.u])); let s=XLSX.utils.aoa_to_sheet(d),b=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(b,s,"Inventory"); XLSX.writeFile(b,`Inventory_${i.loc}_${i.dt}.xlsx`); }
 
         window.onload = () => { applyTheme(); initCategories(); };
