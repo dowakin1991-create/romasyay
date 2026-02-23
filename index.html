@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v17</title>
+    <title>Ромасяй Cloud v18</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -39,8 +39,8 @@
         @keyframes slideIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; } .scroll-area::-webkit-scrollbar { display: none; }
         
-        /* ТУТ МИ ОПУСКАЄМО ШАПКУ ДЛЯ АЙФОНА */
-        .safe-pt { padding-top: max(3rem, env(safe-area-inset-top)); } 
+        /* ЩЕ БІЛЬШИЙ ВІДСТУП ЗВЕРХУ ДЛЯ iOS */
+        .safe-pt { padding-top: max(4.5rem, env(safe-area-inset-top)); } 
         .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
         
         #splashScreen { transition: opacity 0.5s ease, visibility 0.5s; z-index: 9999; } .splash-hide { opacity: 0; visibility: hidden; }
@@ -50,9 +50,9 @@
         .unit-select { appearance: none; -webkit-appearance: none; background: rgba(0, 122, 255, 0.1); padding: 3px 10px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; color: var(--primary); }
         .dark .unit-select { background: rgba(255, 255, 255, 0.1); } .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .icon-btn { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: var(--primary); transition: opacity 0.2s; }
+        .icon-btn { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: var(--primary); transition: opacity 0.2s; }
         .icon-btn:active { opacity: 0.6; }
-        .icon-btn svg { width: 26px; height: 26px; stroke-width: 2.5px; }
+        .icon-btn svg { width: 28px; height: 28px; stroke-width: 2.8px; }
     </style>
 </head>
 <body class="theme-white">
@@ -214,7 +214,7 @@
                 <p>Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
             </div>
             <div class="opacity-40 text-[10px] font-extrabold tracking-[0.2em] uppercase space-y-2 mt-12 pb-10">
-                <p>Version 1.0 Masterpiece v17</p>
+                <p>Version 1.0 Masterpiece v18</p>
                 <p>© 2024 AchillesMaximus.</p>
             </div>
         </main>
