@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v16</title>
+    <title>Ромасяй Cloud v17</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -38,7 +38,11 @@
         .app-screen.active { display: flex; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; } .scroll-area::-webkit-scrollbar { display: none; }
-        .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)); } .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
+        
+        /* ТУТ МИ ОПУСКАЄМО ШАПКУ ДЛЯ АЙФОНА */
+        .safe-pt { padding-top: max(3rem, env(safe-area-inset-top)); } 
+        .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
+        
         #splashScreen { transition: opacity 0.5s ease, visibility 0.5s; z-index: 9999; } .splash-hide { opacity: 0; visibility: hidden; }
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .search-expanded { max-height: 70px; opacity: 1; margin-top: 12px; } .search-collapsed { max-height: 0; opacity: 0; margin-top: 0; pointer-events: none; }
@@ -46,7 +50,6 @@
         .unit-select { appearance: none; -webkit-appearance: none; background: rgba(0, 122, 255, 0.1); padding: 3px 10px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; color: var(--primary); }
         .dark .unit-select { background: rgba(255, 255, 255, 0.1); } .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Нові стилі для іконок */
         .icon-btn { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: var(--primary); transition: opacity 0.2s; }
         .icon-btn:active { opacity: 0.6; }
         .icon-btn svg { width: 26px; height: 26px; stroke-width: 2.5px; }
@@ -111,7 +114,7 @@
 
     <div id="inventoryScreen" class="app-screen">
         <header class="glass shrink-0 pb-3 rounded-b-[35px] shadow-sm flex flex-col transition-all z-50 safe-pt">
-            <div class="flex justify-between items-center w-full px-4 pt-4">
+            <div class="flex justify-between items-center w-full px-4 pt-2">
                 <button onclick="nav('menuScreen')" class="icon-btn -ml-2 shrink-0" aria-label="Назад">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                 </button>
@@ -211,7 +214,7 @@
                 <p>Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
             </div>
             <div class="opacity-40 text-[10px] font-extrabold tracking-[0.2em] uppercase space-y-2 mt-12 pb-10">
-                <p>Version 1.0 Masterpiece v16 (Fixes)</p>
+                <p>Version 1.0 Masterpiece v17</p>
                 <p>© 2024 AchillesMaximus.</p>
             </div>
         </main>
