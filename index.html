@@ -29,215 +29,230 @@
         .theme-black-red { --bg-grad-1: #2a0808; --bg-grad-2: #000000; --text-main: #fecaca; --primary: #f87171; }
         .theme-green-black { --bg-grad-1: #064e3b; --bg-grad-2: #020617; --text-main: #a7f3d0; --primary: #34d399; }
 
-        /* ФІКС ФОНУ (ПРИБИРАЄ БІЛИЙ НИЗ) */
-        html { height: 100%; overflow: hidden; }
+        /* ФІКС БІЛОЇ ПОЛОСИ: заповнюємо весь простір градієнтом */
+        html { height: 100%; background: var(--bg-grad-1); }
         body { 
-            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%); 
-            min-height: 100%; height: 100vh; height: 100dvh;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%) no-repeat fixed; 
             font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; 
-            color: var(--text-main); transition: background 0.4s ease; 
-            margin: 0; padding: 0; position: fixed; width: 100%; 
-            overscroll-behavior: none; user-select: none; -webkit-user-select: none; 
+            color: var(--text-main); position: fixed; width: 100%; height: 100%; 
+            overflow: hidden; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; 
         }
 
-        .app-screen { display: none; height: 100%; width: 100%; position: absolute; top: 0; left: 0; flex-direction: column; }
-        .app-screen.active { display: flex; animation: slideIn 0.3s ease-out; }
+        .glass { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .ios-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .ios-card:active { transform: scale(0.94); opacity: 0.8; }
+
+        .app-screen { display: none; height: 100dvh; width: 100vw; position: absolute; top: 0; left: 0; flex-direction: column; }
+        .app-screen.active { display: flex; animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ФІКС ШАПКИ (ОПУСКАЄМО СТРІЛКУ) */
-        header.glass { 
-            padding-top: max(4rem, env(safe-area-inset-top)); 
-            padding-bottom: 1.5rem; 
+        .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
+        
+        /* ВІДСТУПИ ДЛЯ ШАПКИ (iOS Safe Areas) */
+        .safe-pt { padding-top: calc(env(safe-area-inset-top) + 0.5rem); }
+        .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+        
+        /* ОКРЕМИЙ ФІКС ДЛЯ НАЛАШТУВАНЬ */
+        #settingsScreen header, #archiveScreen header, #aboutScreen header { 
+            padding-top: calc(env(safe-area-inset-top) + 1.2rem); 
+            height: auto; min-height: 90px;
         }
-        
-        .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: env(safe-area-inset-bottom); }
-        .glass { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); }
-        .ios-card { transition: all 0.2s ease; cursor: pointer; } .ios-card:active { transform: scale(0.95); opacity: 0.8; }
-        
-        .icon-btn { width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-        .icon-btn svg { width: 30px; height: 30px; stroke-width: 2.5px; }
-        
-        #splashScreen { z-index: 9999; } .splash-hide { opacity: 0; visibility: hidden; }
-        .unit-select { appearance: none; background: rgba(0, 122, 255, 0.1); padding: 4px 12px; border-radius: 10px; font-weight: 800; font-size: 12px; color: var(--primary); }
+
+        .icon-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .icon-btn svg { width: 24px; height: 24px; stroke-width: 3px; }
+
+        .toggle-checkbox:checked { right: 0; border-color: var(--primary); } 
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--primary); }
+        .unit-select { appearance: none; background: rgba(0, 122, 255, 0.1); padding: 2px 8px; border-radius: 8px; font-weight: 800; color: var(--primary); }
     </style>
 </head>
 <body class="theme-white">
-    <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/20 backdrop-blur-3xl flex flex-col items-center justify-center">
-        <img src="https://iili.io/qKRx5xI.png" class="w-48 h-48 rounded-[40px] shadow-2xl animate-pulse">
-        <div class="mt-12 px-8 py-4 glass rounded-full font-black animate-bounce text-sm tracking-widest uppercase">Торкніться</div>
+    <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/5 backdrop-blur-2xl flex flex-col items-center justify-center z-[9999]">
+        <img src="https://iili.io/qKRx5xI.png" class="w-40 h-40 object-contain rounded-3xl shadow-xl animate-pulse">
+        <div class="mt-8 px-6 py-3 glass rounded-full font-black text-sm animate-bounce" data-i18n="tapToStart">👆 ТОРКНІТЬСЯ</div>
     </div>
 
     <div id="menuScreen" class="app-screen">
-        <div class="scroll-area px-6 pt-16">
-            <div class="flex justify-between items-center mb-8">
+        <div class="scroll-area px-5 pt-10 safe-pt">
+            <div class="flex justify-between items-center mb-6">
                 <div id="userBadgeContainer" class="hidden flex items-center">
-                    <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-4 py-2 rounded-full shadow-lg"></span>
-                    <button onclick="logout()" class="ml-3 text-[10px] font-bold opacity-40 uppercase">Вийти</button>
+                    <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-3 py-1.5 rounded-full uppercase shadow-sm"></span>
+                    <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-2" data-i18n="logout">Вийти</button>
                 </div>
                 <div class="flex-1"></div>
-                <button onclick="nav('settingsScreen')" class="glass w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-sm">🎨</button>
+                <button onclick="nav('settingsScreen')" class="glass w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm">🎨</button>
             </div>
-            <div class="text-center mb-16">
-                <h1 class="text-6xl font-black tracking-tighter mb-2">Ромасяй</h1>
-                <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.4em]">Cloud Edition</p>
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-black tracking-tight">Ромасяй</h1>
+                <p class="text-xs font-black opacity-30 uppercase tracking-[0.3em] mt-1">Cloud Inventory</p>
             </div>
-            <div class="grid grid-cols-2 gap-5">
-                <button onclick="startInventoryFlow()" class="glass p-8 rounded-[35px] col-span-2 ios-card flex flex-col items-center gap-4 bg-[var(--primary)]/5">
-                    <span class="text-5xl">📝</span><span class="font-black text-xl">Почати роботу</span>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="startInventoryFlow()" class="glass p-8 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card col-span-2 shadow-sm bg-[var(--primary)]/5">
+                    <span class="text-4xl">📝</span><span class="font-black text-lg" data-i18n="newInv">Почати</span>
                 </button>
-                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-6 rounded-[35px] ios-card flex flex-col items-center gap-3">
-                    <span class="text-3xl">📦</span><span class="font-black">Архів</span>
-                </button>
-                <button onclick="nav('settingsScreen')" class="glass p-6 rounded-[35px] ios-card flex flex-col items-center gap-3">
-                    <span class="text-3xl">⚙️</span><span class="font-black">Налаштуй</span>
-                </button>
+                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black" data-i18n="archive">Архів</span></button>
+                <button onclick="nav('settingsScreen')" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black" data-i18n="settings">Опції</span></button>
             </div>
         </div>
     </div>
 
     <div id="specialistScreen" class="app-screen">
-        <header class="glass flex items-center px-4">
-            <button onclick="nav('menuScreen')" class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        </header>
-        <div class="scroll-area px-6 flex flex-col justify-center text-center">
-            <h2 class="text-4xl font-black mb-12 italic">Хто сьогодні?</h2>
-            <div class="space-y-6 w-full max-w-sm mx-auto">
-                <button onclick="setUserAndStart('Антон 🚀')" class="w-full py-7 rounded-[30px] font-black text-2xl glass ios-card shadow-xl border-blue-500/20 text-blue-600">Антон 🚀</button>
-                <button onclick="setUserAndStart('Марія 🌺')" class="w-full py-7 rounded-[30px] font-black text-2xl glass ios-card shadow-xl border-pink-500/20 text-pink-600">Марія 🌺</button>
-            </div>
+        <header class="p-4 flex items-center safe-pt"><button onclick="nav('menuScreen')" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button></header>
+        <div class="flex-1 flex flex-col justify-center items-center px-10 gap-6">
+            <h2 class="text-3xl font-black mb-4">Хто працює?</h2>
+            <button onclick="setUserAndStart('Антон 🚀')" class="w-full py-6 rounded-[30px] font-black text-xl glass ios-card shadow-md text-blue-600">Антон 🚀</button>
+            <button onclick="setUserAndStart('Марія 🌺')" class="w-full py-6 rounded-[30px] font-black text-xl glass ios-card shadow-md text-pink-600">Марія 🌺</button>
         </div>
     </div>
 
     <div id="inventoryScreen" class="app-screen">
-        <header class="glass flex flex-col">
-            <div class="flex justify-between items-center px-4">
-                <button onclick="nav('menuScreen')" class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                <span id="displayUser" class="text-[10px] font-black bg-[var(--primary)] text-white px-4 py-1.5 rounded-full uppercase shadow-md"></span>
-                <div class="flex gap-1">
-                    <button onclick="toggleSearch()" class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"/></svg></button>
-                    <button onclick="openAddModal()" class="w-12 h-12 bg-emerald-500 text-white rounded-full text-3xl font-light shadow-lg">+</button>
+        <header class="glass pb-4 rounded-b-[40px] shadow-sm safe-pt z-50">
+            <div class="flex justify-between items-center px-4 pt-2">
+                <button onclick="nav('menuScreen')" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+                <span id="displayUser" class="text-[10px] font-black bg-[var(--primary)] text-white px-3 py-1 rounded-full uppercase"></span>
+                <div class="flex gap-2">
+                    <button onclick="toggleSearch()" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button>
+                    <button onclick="openAddModal()" class="w-10 h-10 bg-emerald-500 text-white rounded-full text-2xl font-light shadow-lg">+</button>
                 </div>
             </div>
-            <div id="searchBarContainer" class="search-collapsed px-5">
-                <div class="flex bg-white/40 dark:bg-black/20 rounded-2xl items-center px-4 my-2 border border-white/20">
-                    <input type="text" id="s" placeholder="Шукай товар..." class="bg-transparent w-full outline-none font-bold py-4 text-lg" onkeyup="render()">
-                    <button onclick="closeSearch()" class="opacity-30 p-2">✕</button>
-                </div>
-            </div>
-            <div class="overflow-x-auto hide-scrollbar flex gap-3 px-5 pt-4 pb-2" id="categoryTabs"></div>
+            <div id="searchBarContainer" class="search-collapsed px-5"><input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/40 dark:bg-black/20 rounded-2xl p-3 outline-none font-bold mt-2" onkeyup="render()"></div>
+            <div class="w-full overflow-x-auto hide-scrollbar flex gap-2 px-5 mt-4" id="categoryTabs"></div>
         </header>
-        <main class="scroll-area px-5 pt-6 space-y-4">
-            <div class="glass rounded-[35px] p-5 flex justify-between items-center shadow-lg border-white/30">
+        <main class="scroll-area px-4 pt-6 space-y-4">
+            <div class="glass rounded-[30px] p-4 flex justify-between items-center bg-[var(--primary)]/5">
                 <div class="pl-2">
-                    <span class="text-[9px] font-black opacity-30 uppercase tracking-widest block mb-1">Локація</span>
-                    <select id="l" class="bg-transparent font-black text-2xl outline-none text-[var(--primary)]" onchange="saveSession()"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
+                    <span class="text-[9px] font-black opacity-30 uppercase tracking-widest">Локація</span>
+                    <select id="l" class="bg-transparent font-black outline-none text-xl block text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="sendToTelegram()" class="glass w-12 h-12 flex items-center justify-center rounded-2xl text-xl">✈️</button>
+                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-lg relative">💾<span class="absolute -top-1 -right-1 flex h-4 w-4"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 text-[8px] flex items-center justify-center border-2 border-white">☁️</span></span></button>
+                </div>
+            </div>
+            <div id="lst" class="space-y-3"></div>
+        </main>
+    </div>
+
+    <div id="settingsScreen" class="app-screen">
+        <header class="glass pb-3 rounded-b-[40px] shadow-sm z-50 flex items-center px-4">
+            <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+            <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Налаштування</span>
+        </header>
+        <main class="scroll-area px-5 pt-8 space-y-6">
+            <div class="glass p-5 rounded-[30px] flex justify-between items-center">
+                <div><h3 class="font-bold">Звук</h3><p class="text-[10px] opacity-40">Кліки та мелодії</p></div>
+                <button onclick="toggleSetting('sound')" id="soundBtn" class="w-12 h-7 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors"><div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-all" id="soundDot"></div></button>
+            </div>
+            <div class="glass p-6 rounded-[35px]">
+                <h3 class="font-bold mb-4">Тема</h3>
+                <div class="grid grid-cols-5 gap-3 mb-6">
+                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-slate-100" onclick="setTheme('theme-white', false)"></button>
+                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-pink-100" onclick="setTheme('theme-pink', false)"></button>
+                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-yellow-100" onclick="setTheme('theme-lemon', false)"></button>
+                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-blue-100" onclick="setTheme('theme-blue', false)"></button>
+                    <button class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-gradient-to-r from-blue-200 to-yellow-100" onclick="setTheme('theme-blue-yellow', false)"></button>
                 </div>
                 <div class="flex gap-4">
-                    <button onclick="sendToTelegram()" class="glass w-14 h-14 rounded-3xl flex items-center justify-center text-2xl text-[var(--primary)]">✈️</button>
-                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-14 h-14 rounded-3xl flex items-center justify-center text-2xl shadow-xl relative">💾<span class="absolute -top-1 -right-1 flex h-6 w-6"><span class="animate-ping absolute inset-0 rounded-full bg-emerald-400 opacity-75"></span><span class="relative flex h-6 w-6 bg-emerald-500 rounded-full border-2 border-white items-center justify-center text-[10px]">☁️</span></span></button>
+                    <button class="w-12 h-12 rounded-full border-2 border-gray-600 bg-slate-900 shadow-xl" onclick="setTheme('theme-black-blue', true)"></button>
+                    <button class="w-12 h-12 rounded-full border-2 border-gray-600 bg-red-950 shadow-xl" onclick="setTheme('theme-black-red', true)"></button>
+                    <button class="w-12 h-12 rounded-full border-2 border-gray-600 bg-emerald-950 shadow-xl" onclick="setTheme('theme-green-black', true)"></button>
                 </div>
             </div>
-            <div id="lst" class="space-y-4 pb-40"></div>
         </main>
     </div>
 
     <div id="archiveScreen" class="app-screen">
-        <header class="glass flex items-center px-4 relative">
-            <button onclick="nav('menuScreen')" class="icon-btn absolute left-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <span class="w-full text-center font-black text-xl tracking-widest uppercase">Хмарний Архів</span>
+        <header class="glass pb-3 rounded-b-[40px] shadow-sm z-50 flex items-center px-4">
+            <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+            <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Хмарний Архів</span>
         </header>
-        <div id="arcView" class="scroll-area px-5 pt-6 space-y-5"></div>
+        <div id="arcView" class="scroll-area px-4 pt-6 space-y-4"></div>
     </div>
 
-    <div id="settingsScreen" class="app-screen">
-        <header class="glass flex items-center px-4 relative">
-            <button onclick="nav('menuScreen')" class="icon-btn absolute left-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <span class="w-full text-center font-black text-xl tracking-widest uppercase">Налаштування</span>
-        </header>
-        <main class="scroll-area px-6 pt-10 space-y-6">
-            <div class="glass p-6 rounded-[35px] flex justify-between items-center shadow-sm">
-                <div><h3 class="font-bold text-lg">Звук</h3><p class="text-xs opacity-40 font-bold uppercase">Системні кліки</p></div>
-                <input type="checkbox" id="toggleSound" onchange="toggleSetting('sound')" class="w-12 h-6 rounded-full appearance-none bg-gray-300 dark:bg-gray-700 checked:bg-[var(--primary)] transition-all relative after:content-[''] after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full checked:after:translate-x-6 after:transition-all">
-            </div>
-            <div class="glass p-6 rounded-[35px] flex justify-between items-center shadow-sm">
-                <div><h3 class="font-bold text-lg">Вібро</h3><p class="text-xs opacity-40 font-bold uppercase">Тактильний відгук</p></div>
-                <input type="checkbox" id="toggleHaptic" onchange="toggleSetting('haptic')" class="w-12 h-6 rounded-full appearance-none bg-gray-300 dark:bg-gray-700 checked:bg-[var(--primary)] transition-all relative after:content-[''] after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full checked:after:translate-x-6 after:transition-all">
-            </div>
-            <div class="glass p-8 rounded-[40px]">
-                <h3 class="font-black text-lg mb-6 text-center uppercase tracking-widest opacity-40">Палітра тем</h3>
-                <div class="flex flex-wrap justify-center gap-6 mb-8">
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]" data-theme="theme-white" onclick="setTheme('theme-white', false)"></button>
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#fdf2f8] to-[#fbcfe8]" data-theme="theme-pink" onclick="setTheme('theme-pink', false)"></button>
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#fefce8] to-[#fef08a]" data-theme="theme-lemon" onclick="setTheme('theme-lemon', false)"></button>
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#f0f9ff] to-[#bae6fd]" data-theme="theme-blue" onclick="setTheme('theme-blue', false)"></button>
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-[#bae6fd] to-[#fef08a]" data-theme="theme-blue-yellow" onclick="setTheme('theme-blue-yellow', false)"></button>
-                </div>
-                <div class="flex justify-center gap-6">
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-gray-800 shadow-xl bg-gradient-to-br from-[#020617] to-[#1e293b]" data-theme="theme-black-blue" onclick="setTheme('theme-black-blue', true)"></button>
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-gray-800 shadow-xl bg-gradient-to-br from-[#2a0808] to-[#000000]" data-theme="theme-black-red" onclick="setTheme('theme-black-red', true)"></button>
-                    <button class="theme-btn w-12 h-12 rounded-full border-4 border-gray-800 shadow-xl bg-gradient-to-br from-[#064e3b] to-[#020617]" data-theme="theme-green-black" onclick="setTheme('theme-green-black', true)"></button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="addModal" class="fixed inset-0 z-[110] bg-black/70 hidden flex items-center justify-center p-8 backdrop-blur-xl opacity-0 transition-all duration-300">
-        <div class="w-full max-w-sm glass p-10 rounded-[45px] space-y-6 shadow-2xl scale-90" id="modalContent">
-            <h2 class="text-3xl font-black text-center text-emerald-500 mb-4">Новий товар</h2>
-            <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-6 glass rounded-3xl font-bold text-2xl text-center outline-none bg-white/40 dark:bg-black/20">
-            <select id="newItemUnit" class="w-full p-6 glass rounded-3xl font-bold text-2xl outline-none text-center bg-white/40 dark:bg-black/20 text-[var(--primary)]"><option value="кг">КГ</option><option value="шт">ШТ</option><option value="л">Л</option><option value="мл">МЛ</option></select>
-            <div class="flex gap-4 pt-6">
-                <button onclick="closeAddModal()" class="flex-1 py-5 rounded-3xl font-black glass opacity-60 ios-card text-lg">Назад</button>
-                <button onclick="saveNewItem()" class="flex-1 py-5 rounded-3xl font-black bg-emerald-500 text-white shadow-xl ios-card text-lg">Додати</button>
+    <div id="addModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-8 backdrop-blur-md z-[10000] opacity-0 transition-opacity duration-300">
+        <div class="w-full glass p-8 rounded-[40px] space-y-6 scale-90 transition-transform duration-300" id="modalContent">
+            <h2 class="text-2xl font-black text-center text-emerald-500">Новий товар</h2>
+            <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-4 glass rounded-2xl outline-none font-bold text-center">
+            <select id="newItemUnit" class="w-full p-4 glass rounded-2xl outline-none font-bold text-center"><option>кг</option><option>шт</option><option>л</option><option>мл</option></select>
+            <div class="flex gap-3">
+                <button onclick="closeAddModal()" class="flex-1 p-4 glass rounded-2xl font-bold opacity-50">Відміна</button>
+                <button onclick="saveNewItem()" class="flex-1 p-4 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg">Додати</button>
             </div>
         </div>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyAfSPpB0l2whC6A9q596fFU-VwYTluN1vY", authDomain: "romasyay-cloud.firebaseapp.com", databaseURL: "https://romasyay-cloud-default-rtdb.europe-west1.firebasedatabase.app", projectId: "romasyay-cloud", storageBucket: "romasyay-cloud.firebasestorage.app", messagingSenderId: "515733482243", appId: "1:515733482243:web:26e286e071fd3621859736" };
-        firebase.initializeApp(firebaseConfig); const database = firebase.database();
-        database.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_archive_opt', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
-
-        const categories = ["Усі", "🍣 Суші", "🍕 Піца", "🍹 Бар", "🥣 Соуси", "📦 Упак", "🥬 Інше"]; let currentCategory = "Усі";
-        function getCategoryForName(n) { let l = n.toLowerCase(); if(l.includes('піц')||l.includes('пармез')||l.includes('моцаре')||l.includes('орео')||l.includes('сир')||l.includes('шинк')) return '🍕 Піца'; if(l.includes('вино')||l.includes('пиво')||l.includes('віск')||l.includes('ром')||l.includes('лікер')||l.includes('сік')||l.includes('пепс')||l.includes('кава')) return '🍹 Бар'; if(l.includes('упак')||l.includes('короб')||l.includes('палич')||l.includes('пакет')||l.includes('пергам')) return '📦 Упак'; if(l.includes('соус')||l.includes('майон')||l.includes('васаб')||l.includes('імбір')) return '🥣 Соуси'; if(l.includes('лос')||l.includes('вуг')||l.includes('тун')||l.includes('ікр')||l.includes('крев')||l.includes('рис')||l.includes('норі')) return '🍣 Суші'; return '🥬 Інше'; }
-        const defaultRawItems=["7АП","7АП 1Л.","Авокадо","Айсберг","Ананас для Піци","Банан","Бренді Арді","Бульйон Курячий","Васабі","Васабі Ромасяй 7.5гр.","Вершки для Піци","Вино Decordi Ламбруско Напівсухе Біле (0.750л)","Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)","Вино Decordi Ламбруско Напівсухе Червоне (0.750л)","Вино Decordi Ламбруско Сухе Секо Біле (0.750л)","Вино Decordi Напівсолодке Біле (50мл.)","Вино Decordi Напівсолодке Червоне (50мл.)","Вино Decordi Сухе Червоне (50мл.)","Вино Ігристе Апостроф Брют (50мл.)","Вино ігристе Decordi Просекко (0.750л)","Вино Просекко розлив","Вино Чоя Ориджинал (50мл)","Вишня морожена","Віскі Бушмілс (50мл.)","Віскі Ват 69 (50мл.)","Віскі Гленморанж (50мл)","Віскі Джек Деніелс (50мл.)","Віскі Джек Деніелс Хані (50мл.)","Віскі Джек Деніелс Яблуко (50мл.)","Віскі Погіс (50мл.)","Віскі Ханкі Баністер (50мл.)","Вода","Вода \"Трускавецька\" (0,5л пластик)","Вода Міринда","Вода трускавецька 0,5 скл","Вода Трускавецькі 0,3 скл","Вугор","Горілка Кий","Горілка Фін (50мл.)","Горілка Фінляндія","Горілка Фінські (50мл)","Горіховий соус","Гребінець","Гриби Шиїтакі","Грудинка марочна для Піці","Десерт Моті","Джек Деніелс Яблуко","Джин Фінсбарі (50мл)","Дріжджі","Есколар масляний","Зелена цибуля","Золото","Ікра массаго Червона","Ікра тобіко","Імбір","Імбір Ромасяй 30гр.","Інарі","Кабаноссі для Піці","Кава Джемені","Каперси для Піці","Капуста Броколі","Кокосова Стружка","Коньяк Агмарті 3 роки (50мл.)","Коньяк Агмарті 5 років (50мл.)","Коньяк Хеннесі VS (50мл)","Коробка для Піці","Крамбл","Крафт-пакет","Крафтова палічка","Креветка 16/20","Крем сир для Піці","Кукурудза для Піці","Кукурудза консервована","Кунжут білий","Кунжут чорний","Куряче філе","Лайм","Лимон","Лікер Апероль (50мл.)","Лікер Бейліс (50мл.)","Лікер Єгермейстер (50мл.)","Лікер Пізан","Лікер Самбука Саутіні","Лікер Трипл Сек","Лосось копчений","Лосось філе","Майонез Провансаль","Майонез Японський","Маменорі","Манго Королівське","Манго для Піци","Мікрогрін","Мірин","Місопаста","Молоко","Морква","Морозиво в асортименті","Мука Темпура","Мука для піци","М'ята","Нитки чилі для Піці","Норі","Обліпиха морожена","Огірок","Огірок маринований для Піці","Оливки для Піци","Олія","Олія для Фритюра","Олія для піци","Омлет","Орео","Оцет рисовий","Палички","Пан Тостовий","Пармезан для Піці","Перепеліне яйце для Піці","Перець болгарський","Перець болгарський для Піці","Перець гострий","Пергамент для Піці","Пепсі","Печериці для Піці","Пиво hoegaarden (300 мл.)","Пиво stella artois (500 мл.)","Пиво stella artois Б.А (500 мл.)","Пиво Будвайзер 0.5л","Пиво Будвайзер 0.5л БА","Пиво Гамбрінус 0.5л","Пиво Клаустхаллер БА (0,5л)","Пиво Микулинецьке 0.5л","Пиво Микулинецьке 0,5 БА","Порей Цибуля","Рамен Макарон","Рисовий папір","Рис Хакумай, США","Ром Ботафого (50мл.)","Ром Капітан Морган Gold (50мл.)","Ром Капітан Морган Білий (50мл.)","Ром Карибії","Рукола","Салат айсберг для Піці","Салат чука","Салямі Італійська Для Піці","Салямі Оригінальна для Піці","Сир Дорблю для Піці","Сир Камамбер","Сир Маскарпоне","Сир Моцарела тверда","Сир Тофу","Сир Хохланд","Сирні Кульки філадельфія","Сіль","Сіроп Гренадін","Сніжний краб","Сок в асортименті","Соус Кислосолодкий","Соус Кім Чі","Соус Кунжутний Бургер","Соус Рамен","Соус Сирний для Піці","Соус Соєвий Ромасяй 50гр.","Соус Унагі","Соус Шрірача","Соус для Піци","Соус кіккоман","Соус порційний для піци","Соус сирий","Соус соєвий","Соус спайсі","Соус цезар для піци","Стружка тунця","Сусник великий","Сухарі Панко","Сухарики для Піці","Сяке Чоя (50м.)","Текіла Сієрра Сільвер (50мл.)","Тонік Евервесс","Тримачі навчальні","Тунець","Удон","Упаковка 1рол. Верх","Упаковка 1рол. Низ","Упаковка Бургер: Верх","Упаковка Бургер: Низ","Упаковка картону: Верх:","Упаковка картону: Низ:","Філе бедра для Піці","Фісташка для Піці","Фунчоза","Хамон","Холодний чай","Хундаші","Цибуля","Цибуля зелена","Цибуля червона для Піці","Цукор","Цукор в стіках","Чай в асортименті","Часник","Чорнила Каракатиці","Чіпси рисові","Шинка з Білого Мяса для Піці","Шинка традиційна для піци","Яблука","Яйце"];
-        let PRODS = JSON.parse(localStorage.getItem('romasyay_v15_prods')) || defaultRawItems.map(n=>{let l=n.toLowerCase(),u="кг";if(l.includes("мл")||l.includes("соус")||l.includes("вода")||l.includes("пиво")||l.includes("вино")||l.includes("віскі")||l.includes("ром")||l.includes("сіроп")||l.includes("оцет")||l.includes("олія")||l.includes("лікер")||l.includes("чай")||l.includes("пепсі")||l.includes("тонік")||l.includes("сік"))u="мл";if(l.includes("шт")||l.includes("яйце")||l.includes("упаков")||l.includes("коробк")||l.includes("паличк")||l.includes("пакет")||l.includes("десерт")||l.includes("норі")||l.includes("порц")||l.includes("гр.")||l.includes("пергамент")||l.includes("тримач"))u="шт";return{n,u,c:getCategoryForName(n)}});
+        firebase.initializeApp(firebaseConfig); const db = firebase.database();
         
-        let appSettings = JSON.parse(localStorage.getItem('romasyay_settings')) || { sound: true, haptic: true, themeName: 'theme-white', isDark: false };
-        let vals = JSON.parse(localStorage.getItem('romasyay_current_session')) || {}, currentUser = "", startupSoundPlayed = false;
+        db.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_arc', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
 
-        function applyTheme(){document.documentElement.className=appSettings.isDark?'dark':'light';document.body.className=appSettings.themeName;document.getElementById('theme-color-meta').content=appSettings.isDark?"#020617":"#f8fafc";document.querySelectorAll('.theme-btn').forEach(b=>{b.classList.remove('ring-4','ring-[var(--primary)]','scale-110');if(b.dataset.theme===appSettings.themeName)b.classList.add('ring-4','ring-[var(--primary)]','scale-110')});}
-        function setTheme(n,d){appSettings.themeName=n;appSettings.isDark=d;localStorage.setItem('romasyay_settings',JSON.stringify(appSettings));applyTheme();if(appSettings.sound)playNeutralClick();}
-        function toggleSetting(k){appSettings[k]=!appSettings[k];localStorage.setItem('romasyay_settings',JSON.stringify(appSettings));if(k==='sound'&&appSettings.sound)playNeutralClick();if(k==='haptic'&&appSettings.haptic&&navigator.vibrate)navigator.vibrate(5);}
-        function playStartupMelody(){if(!appSettings.sound)return;try{let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523.25,659.25,783.99,1046.50].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.2,t+i*0.1+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.1+0.4);o.connect(g);g.connect(c.destination);o.start(t+i*0.1);o.stop(t+i*0.1+0.5)})}catch(e){}}
-        function playNeutralClick(){if(appSettings.haptic&&navigator.vibrate)navigator.vibrate(5);if(!appSettings.sound)return;try{let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(1200,c.currentTime);g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
-        function playPianoSuccess(){if(!appSettings.sound)return;try{let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523.25,659.25,1046.50].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
+        const categories = ["Усі", "🍣 Суші", "🍕 Піца", "🍹 Бар", "🥣 Соуси", "📦 Упаковка", "🥬 Інше"];
+        let currentCat = "Усі", PRODS = JSON.parse(localStorage.getItem('romasyay_v15_prods')) || [], vals = {}, currentUser = "";
+        let settings = JSON.parse(localStorage.getItem('romasyay_settings')) || { sound: true, theme: 'theme-white', isDark: false };
 
-        function dismissSplash(){if(startupSoundPlayed)return;startupSoundPlayed=true;playStartupMelody();document.getElementById('splashScreen').classList.add('splash-hide');setTimeout(()=>{document.getElementById('splashScreen').style.display='none'},500);nav('menuScreen');}
-        function nav(s){document.querySelectorAll('.app-screen').forEach(e=>e.classList.remove('active'));document.getElementById(s).classList.add('active');if(s!=='inventoryScreen')closeSearch();if(appSettings.sound&&s!=='menuScreen'&&startupSoundPlayed)playNeutralClick();}
-        window.onload=()=>{document.getElementById('toggleSound').checked=appSettings.sound;document.getElementById('toggleHaptic').checked=appSettings.haptic;applyTheme();initCategories();updateUserBadge();};
+        function applyTheme() {
+            document.documentElement.className = settings.isDark ? 'dark' : 'light';
+            document.body.className = settings.theme;
+            document.getElementById('theme-color-meta').content = settings.isDark ? "#020617" : "#f8fafc";
+            // Оновлення кнопки звуку
+            document.getElementById('soundBtn').classList.toggle('bg-blue-500', settings.sound);
+            document.getElementById('soundDot').style.left = settings.sound ? '26px' : '4px';
+        }
 
-        function updateUserBadge(){if(currentUser){document.getElementById('displayUserMenu').innerText=currentUser;document.getElementById('displayUser').innerText=currentUser;document.getElementById('userBadgeContainer').classList.remove('hidden');}else{document.getElementById('userBadgeContainer').classList.add('hidden');}}
-        function startInventoryFlow(){if(appSettings.sound)playNeutralClick();currentUser?nav('inventoryScreen')&&render():nav('specialistScreen');}
-        function setUserAndStart(n){currentUser=n;updateUserBadge();try{new(window.AudioContext||window.webkitAudioContext)().resume()}catch(e){}let l=localStorage.getItem('romasyay_current_loc');if(l)document.getElementById('l').value=l;nav('inventoryScreen');render();}
-        function logout(){if(appSettings.sound)playNeutralClick();currentUser="";updateUserBadge();}
-        function initCategories(){document.getElementById('categoryTabs').innerHTML=categories.map(c=>`<button onclick="setCategory('${c}')" id="cat-${c.replace(/\s+/g,'')}" class="whitespace-nowrap px-6 py-2.5 rounded-full text-xs font-black transition-all shadow-sm ${c==='Усі'?'bg-[var(--primary)] text-white':'glass text-[var(--text-main)]'}">${c}</button>`).join('');}
-        function setCategory(c){currentCategory=c;document.querySelectorAll('#categoryTabs button').forEach(b=>{let a=b.id==='cat-'+c.replace(/\s+/g,'');b.className=`whitespace-nowrap px-6 py-2.5 rounded-full text-xs font-black transition-all shadow-sm ${a?'bg-[var(--primary)] text-white':'glass text-[var(--text-main)]'}`;});if(appSettings.sound)playNeutralClick();render();}
-        function updateUnit(n,u){let i=PRODS.find(p=>p.n===n);if(i){i.u=u;localStorage.setItem('romasyay_v15_prods',JSON.stringify(PRODS));}}
-        function saveSession(){localStorage.setItem('romasyay_current_session',JSON.stringify(vals));localStorage.setItem('romasyay_current_loc',document.getElementById('l').value);}
-        function toggleSearch(){const c=document.getElementById('searchBarContainer'),i=document.getElementById('s');if(c.classList.contains('search-collapsed')){c.classList.remove('search-collapsed');c.classList.add('search-expanded');setTimeout(()=>i.focus(),300);}else{closeSearch();}if(appSettings.sound)playNeutralClick();}
-        function closeSearch(){const c=document.getElementById('searchBarContainer'),i=document.getElementById('s');c.classList.remove('search-expanded');c.classList.add('search-collapsed');i.value='';render();}
-        function render(){let f=PRODS;if(currentCategory!=='Усі')f=PRODS.filter(p=>p.c===currentCategory);const q=document.getElementById('s').value.toLowerCase();if(q)f=f.filter(p=>p.n.toLowerCase().includes(q));document.getElementById('lst').innerHTML=f.sort((a,b)=>a.n.localeCompare(b.n,'uk')).map((p,i)=>`<div class="glass rounded-[35px] p-6 shadow-sm border-white/20"><div class="flex justify-between items-start mb-5"><div><select onchange="updateUnit('${p.n}',this.value)" class="unit-select outline-none"><option value="кг"${p.u==='кг'?'selected':''}>КГ</option><option value="шт"${p.u==='шт'?'selected':''}>ШТ</option><option value="л"${p.u==='л'?'selected':''}>Л</option><option value="мл"${p.u==='мл'?'selected':''}>МЛ</option></select><h3 class="text-xl font-black mt-2 leading-tight">${p.n}</h3></div><div class="flex items-center gap-4"><span class="text-3xl font-black text-[var(--primary)]">${vals[p.n]||0}</span><button onclick="rst('${p.n}')" class="ios-card w-10 h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-full text-sm font-black">✕</button></div></div><div class="flex gap-4"><input type="number" id="inp-${i}" placeholder="Введіть..." class="w-full rounded-2xl p-5 text-center font-black text-2xl outline-none focus:ring-4 ring-[var(--primary)]/30 bg-white/50 dark:bg-black/20" onkeydown="if(event.key==='Enter')confirmBtn('${p.n}','inp-${i}')"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="ios-card bg-[var(--primary)] text-white rounded-2xl px-10 text-3xl flex items-center shadow-lg">✓</button></div></div>`).join('');}
-        function confirmBtn(n,id){let i=document.getElementById(id),v=parseFloat(i.value)||0;if(v!==0){vals[n]=(vals[n]||0)+v;i.value='';playNeutralClick();saveSession();render();}}
-        function rst(n){if(confirm('Обнулити?')){vals[n]=0;saveSession();render();}}
-        function openAddModal(){const m=document.getElementById('addModal'),c=document.getElementById('modalContent');m.classList.remove('hidden');setTimeout(()=>{m.classList.add('opacity-100');c.classList.remove('scale-90')},10);if(appSettings.sound)playNeutralClick();}
-        function closeAddModal(){const m=document.getElementById('addModal'),c=document.getElementById('modalContent');m.classList.remove('opacity-100');c.classList.add('scale-90');setTimeout(()=>{m.classList.add('hidden');document.getElementById('newItemName').value=''},300);if(appSettings.sound)playNeutralClick();}
-        function saveNewItem(){const n=document.getElementById('newItemName').value.trim(),u=document.getElementById('newItemUnit').value;if(!n)return alert("Назва!");PRODS.push({n,u,c:getCategoryForName(n)});localStorage.setItem('romasyay_v15_prods',JSON.stringify(PRODS));closeAddModal();render();}
-        function saveData(){const i=PRODS.map(p=>vals[p.n]>0?{n:p.n,v:vals[p.n],u:p.u}:null).filter(x=>x);if(i.length===0)return alert("Порожньо!");const r={id:Date.now(),user:currentUser,loc:document.getElementById('l').value,dt:new Date().toLocaleString('uk-UA'),items:i};let a=JSON.parse(localStorage.getItem('romasyay_archive_opt'))||[];a.push(r);localStorage.setItem('romasyay_archive_opt',JSON.stringify(a));database.ref('inventories/'+r.id).set(r);vals={};saveSession();playPianoSuccess();render();setTimeout(()=>alert("Збережено в хмару!"),300);}
-        function loadArchive(){let a=JSON.parse(localStorage.getItem('romasyay_archive_opt'))||[];if(a.length===0){document.getElementById('arcView').innerHTML='<p class="text-center opacity-40 py-20 font-black">Архів порожній</p>';return;}document.getElementById('arcView').innerHTML=a.reverse().map(x=>`<div class="glass rounded-[35px] p-8 shadow-md relative mb-6"><div class="absolute top-6 right-6 flex gap-4"><button onclick="downloadExcel(${x.id})" class="text-green-500 text-2xl">📗</button><button onclick="deleteCloudArchive(${x.id})" class="text-red-500 text-2xl">🗑</button></div><div class="mb-6"><div class="text-[10px] font-black opacity-40 uppercase tracking-widest text-[var(--primary)] mb-1">☁️ Синхронізовано</div><h4 class="font-black text-2xl">${x.user}</h4><div class="text-xs font-bold opacity-50">${x.loc} • ${x.dt}</div></div><div class="space-y-2 pt-6 border-t border-white/20">${x.items.map(i=>`<div class="text-base flex justify-between font-bold"><span>${i.n}</span><span class="font-black text-[var(--primary)]">${i.v} ${i.u}</span></div>`).join('')}</div></div>`).join('');}
-        function downloadExcel(id){let a=JSON.parse(localStorage.getItem('romasyay_archive_opt'))||[],i=a.find(x=>x.id===id);if(!i)return;let d=[["Локація:",i.loc,"Дата:",i.dt],["Товар","Кількість","Одиниці"]];i.items.forEach(x=>d.push([x.n,x.v,x.u]));let s=XLSX.utils.aoa_to_sheet(d);let b=XLSX.utils.book_new();XLSX.utils.book_append_sheet(b,s,"Інвентура");XLSX.writeFile(b,`Ромасяй_${i.loc}_${i.dt.replace(/[: ,]/g,'_')}.xlsx`);}
-        function deleteCloudArchive(id){if(prompt("Пароль:")!=="100200300")return;database.ref('inventories/'+id).remove().then(()=>{let a=JSON.parse(localStorage.getItem('romasyay_archive_opt'))||[];a=a.filter(x=>x.id!==id);localStorage.setItem('romasyay_archive_opt',JSON.stringify(a));loadArchive();});}
-        function sendToTelegram(){const i=PRODS.map(p=>vals[p.n]>0?`${p.n}: ${vals[p.n]} ${p.u}`:null).filter(x=>x);if(i.length===0)return;const t=`📊 ІНВЕНТУРА\n${currentUser} • ${document.getElementById('l').value}\n${new Date().toLocaleString('uk-UA')}\n\n${i.join('\n')}`;navigator.share?navigator.share({text:t}):window.location.href=`https://t.me/share/url?url=&text=${encodeURIComponent(t)}`;}
+        function setTheme(t, d) { settings.theme = t; settings.isDark = d; saveSettings(); applyTheme(); }
+        function toggleSetting(k) { settings[k] = !settings[k]; saveSettings(); applyTheme(); if(settings.sound) playNeutralClick(); }
+        function saveSettings() { localStorage.setItem('romasyay_settings', JSON.stringify(settings)); }
+
+        function nav(s) { document.querySelectorAll('.app-screen').forEach(e => e.classList.remove('active')); document.getElementById(s).classList.add('active'); if(settings.sound) playNeutralClick(); }
+        function dismissSplash() { document.getElementById('splashScreen').classList.add('splash-hide'); nav('menuScreen'); }
+
+        function initCategories() {
+            document.getElementById('categoryTabs').innerHTML = categories.map(c => `
+                <button onclick="setCategory('${c}')" class="px-5 py-2 rounded-full text-xs font-black transition-all ${c===currentCat?'bg-[var(--primary)] text-white shadow-md':'glass opacity-60'}">${c}</button>
+            `).join('');
+        }
+        function setCategory(c) { currentCat = c; initCategories(); render(); }
+
+        function render() {
+            let f = PRODS;
+            if(currentCat !== "Усі") f = f.filter(p => p.c === currentCat);
+            const q = document.getElementById('s').value.toLowerCase();
+            if(q) f = f.filter(p => p.n.toLowerCase().includes(q));
+
+            document.getElementById('lst').innerHTML = f.sort((a,b)=>a.n.localeCompare(b.n,'uk')).map((p, i) => `
+                <div class="glass rounded-[30px] p-5 animate-fade-in"><div class="flex justify-between items-start mb-4"><div><span class="text-[10px] font-black uppercase opacity-30 tracking-widest">${p.u}</span><h3 class="text-lg font-black leading-tight">${p.n}</h3></div><div class="text-3xl font-black text-[var(--primary)]">${vals[p.n]||0}</div></div><div class="flex gap-3"><input type="number" id="inp-${i}" placeholder="0" class="w-full rounded-2xl p-4 text-center font-black text-xl bg-white/40 dark:bg-black/20 outline-none" onkeydown="if(event.key==='Enter')confirmBtn('${p.n}','inp-${i}')"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-8 rounded-2xl text-2xl shadow-lg">✓</button></div></div>`).join('');
+        }
+
+        function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value='';if(settings.sound)playNeutralClick();render();}}
+        function setUserAndStart(n) { currentUser = n; document.getElementById('displayUserMenu').innerText = n; document.getElementById('displayUser').innerText = n; document.getElementById('userBadgeContainer').classList.remove('hidden'); nav('inventoryScreen'); render(); }
+        function logout() { currentUser = ""; document.getElementById('userBadgeContainer').classList.add('hidden'); nav('menuScreen'); }
+        
+        function saveData() {
+            const items = PRODS.map(p => vals[p.n] > 0 ? {n:p.n, v:vals[p.n], u:p.u} : null).filter(x=>x);
+            if(!items.length) return alert("Порожньо!");
+            const r = {id:Date.now(), user:currentUser, loc:document.getElementById('l').value, dt:new Date().toLocaleString('uk-UA'), items};
+            db.ref('inventories/'+r.id).set(r).then(() => { vals = {}; playPianoSuccess(); render(); alert("✅ Збережено!"); });
+        }
+
+        function loadArchive() {
+            let a = JSON.parse(localStorage.getItem('romasyay_arc')) || [];
+            document.getElementById('arcView').innerHTML = a.reverse().map(x => `
+                <div class="glass rounded-[35px] p-6 relative mb-4">
+                    <button onclick="downloadExcel(${x.id})" class="absolute top-4 right-4 w-10 h-10 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center">📗</button>
+                    <div class="mb-4 pr-12"><h4 class="font-black text-xl">${x.user} • ${x.loc}</h4><div class="text-[10px] font-bold opacity-40 uppercase">${x.dt}</div></div>
+                    <div class="space-y-1 pt-3 border-t border-gray-300/20">${x.items.map(i=>`<div class="text-sm flex justify-between font-bold"><span>${i.n}</span><span class="text-[var(--primary)]">${i.v} ${i.u}</span></div>`).join('')}</div>
+                </div>`).join('');
+        }
+
+        function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(5); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
+        function playPianoSuccess() { try { let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523,659,1046].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
+        function openAddModal() { const m=document.getElementById('addModal'); m.classList.remove('hidden'); setTimeout(()=> { m.classList.replace('opacity-0','opacity-100'); document.getElementById('modalContent').classList.replace('scale-90','scale-100'); },10); }
+        function closeAddModal() { const m=document.getElementById('addModal'); m.classList.replace('opacity-100','opacity-0'); document.getElementById('modalContent').classList.replace('scale-100','scale-90'); setTimeout(()=>m.classList.add('hidden'),300); }
+        function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('search-expanded'); c.classList.toggle('search-collapsed'); if(!c.classList.contains('search-collapsed')) document.getElementById('s').focus(); }
+        function downloadExcel(id) { let a=JSON.parse(localStorage.getItem('romasyay_arc')),i=a.find(x=>x.id===id); let d=[["Товар","Кількість","Од."]]; i.items.forEach(x=>d.push([x.n,x.v,x.u])); let s=XLSX.utils.aoa_to_sheet(d),b=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(b,s,"Inventory"); XLSX.writeFile(b,`Inventory_${i.loc}_${i.dt}.xlsx`); }
+
+        window.onload = () => { applyTheme(); initCategories(); };
     </script>
 </body>
 </html>
