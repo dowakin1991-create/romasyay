@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Ромасяй">
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v25</title>
+    <title>Ромасяй Cloud v26</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -24,9 +24,12 @@
         .theme-lemon { --bg-grad-1: #fefce8; --bg-grad-2: #fef08a; --text-main: #713f12; --primary: #ca8a04; }
         .theme-blue { --bg-grad-1: #f0f9ff; --bg-grad-2: #bae6fd; --text-main: #0c4a6e; --primary: #0284c7; }
         .theme-blue-yellow { --bg-grad-1: #bae6fd; --bg-grad-2: #fef08a; --text-main: #1e293b; }
+        .theme-naruto { --bg-grad-1: #fff7ed; --bg-grad-2: #fed7aa; --text-main: #c2410c; --primary: #2563eb; }
+        
         .theme-black-blue { --bg-grad-1: #020617; --bg-grad-2: #0f172a; --text-main: #f8fafc; --primary: #60a5fa; }
         .theme-black-red { --bg-grad-1: #2a0808; --bg-grad-2: #000000; --text-main: #fecaca; --primary: #f87171; }
         .theme-green-black { --bg-grad-1: #064e3b; --bg-grad-2: #020617; --text-main: #a7f3d0; --primary: #34d399; }
+        .theme-shakhtar { --bg-grad-1: #1a1a1a; --bg-grad-2: #000000; --text-main: #ffffff; --primary: #f97316; }
 
         html { height: 100%; background-color: var(--bg-grad-2); transition: background-color 0.4s ease; }
         body { 
@@ -42,8 +45,17 @@
         .ios-card:active { transform: scale(0.96); opacity: 0.8; }
 
         .app-screen { display: none; height: 100dvh; width: 100vw; flex-direction: column; position: absolute; top: 0; left: 0; }
-        .app-screen.active { display: flex; animation: slideIn 0.3s ease-out forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .app-screen.active { display: flex; animation: fadeScreen 0.3s ease-out forwards; }
+        @keyframes fadeScreen { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Анімація карток меню */
+        .menu-card { opacity: 0; transform: translateY(30px); }
+        .app-screen.active .menu-card { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .menu-card:nth-child(1) { animation-delay: 0.1s; }
+        .menu-card:nth-child(2) { animation-delay: 0.2s; }
+        .menu-card:nth-child(3) { animation-delay: 0.3s; }
+        .menu-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
 
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 150px; }
         
@@ -62,15 +74,18 @@
 <body class="theme-white">
     <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/10 backdrop-blur-2xl flex flex-col items-center justify-center z-[9999]">
         <img src="https://iili.io/qKRx5xI.png" class="w-44 h-44 object-contain rounded-[40px] shadow-2xl animate-pulse">
-        <div class="mt-10 px-8 py-4 glass rounded-full font-black text-sm animate-bounce tracking-widest">👆 ТОРКНІТЬСЯ</div>
+        <div class="mt-10 px-8 py-4 glass rounded-full font-black text-sm animate-bounce tracking-widest" data-i18n="tapToStart">👆 ТОРКНІТЬСЯ</div>
     </div>
 
     <div id="menuScreen" class="app-screen">
         <div class="scroll-area px-6 safe-pt-menu">
             <div class="flex justify-between items-center mb-8">
-                <div id="userBadgeContainer" class="hidden flex items-center">
-                    <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-4 py-2 rounded-full uppercase shadow-md"></span>
-                    <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-3">Вийти</button>
+                <div class="flex items-center gap-3">
+                    <span class="glass w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm ios-card">☁️</span>
+                    <div id="userBadgeContainer" class="hidden flex items-center">
+                        <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-4 py-2 rounded-full uppercase shadow-md"></span>
+                        <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-3" data-i18n="logout">Вийти</button>
+                    </div>
                 </div>
                 <div class="flex-1"></div>
                 <button onclick="nav('settingsScreen')" class="glass w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm ios-card">🎨</button>
@@ -79,14 +94,14 @@
                 <h1 class="text-6xl font-black tracking-tight">Ромасяй</h1>
                 <p class="text-[11px] font-black opacity-30 uppercase tracking-[0.4em] mt-3">Cloud Inventory</p>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="startInventoryFlow()" class="glass p-10 rounded-[40px] flex flex-col items-center justify-center gap-4 ios-card col-span-2 shadow-sm relative overflow-hidden">
+            <div class="grid grid-cols-2 gap-4 relative">
+                <button onclick="startInventoryFlow()" class="menu-card glass p-10 rounded-[40px] flex flex-col items-center justify-center gap-4 ios-card col-span-2 shadow-sm relative overflow-hidden">
                     <div class="absolute inset-0 bg-[var(--primary)] opacity-5"></div>
-                    <span class="text-5xl">📝</span><span class="font-black text-xl">Почати</span>
+                    <span class="text-5xl">📝</span><span class="font-black text-xl text-center" data-i18n="newInv">Нова інвентаризація</span>
                 </button>
-                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black">Архів</span></button>
-                <button onclick="nav('settingsScreen')" class="glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black">Опції</span></button>
-                <button onclick="nav('aboutScreen')" class="glass p-6 rounded-[35px] flex items-center justify-center gap-3 ios-card col-span-2 shadow-sm"><span class="text-2xl">ℹ️</span><span class="font-black text-sm uppercase tracking-widest opacity-70">Про додаток</span></button>
+                <button onclick="nav('archiveScreen'); loadArchive();" class="menu-card glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black" data-i18n="archive">Архів</span></button>
+                <button onclick="nav('settingsScreen')" class="menu-card glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black" data-i18n="settings">Опції</span></button>
+                <button onclick="nav('aboutScreen')" class="menu-card glass p-6 rounded-[35px] flex items-center justify-center gap-3 ios-card col-span-2 shadow-sm"><span class="text-2xl">ℹ️</span><span class="font-black text-sm uppercase tracking-widest opacity-70" data-i18n="about">Про додаток</span></button>
             </div>
         </div>
     </div>
@@ -94,7 +109,7 @@
     <div id="specialistScreen" class="app-screen">
         <header class="glass rounded-b-[40px] shadow-sm flex items-center px-4 safe-pt-header shrink-0"><button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button></header>
         <div class="flex-1 flex flex-col justify-center items-center px-10 gap-6">
-            <h2 class="text-4xl font-black mb-6 text-center">Хто працює?</h2>
+            <h2 class="text-4xl font-black mb-6 text-center" data-i18n="who">Хто працює?</h2>
             <button onclick="setUserAndStart('Антон 🚀')" class="w-full py-7 rounded-[35px] font-black text-2xl glass ios-card shadow-md text-blue-600">Антон 🚀</button>
             <button onclick="setUserAndStart('Марія 🌺')" class="w-full py-7 rounded-[35px] font-black text-2xl glass ios-card shadow-md text-pink-600">Марія 🌺</button>
         </div>
@@ -119,7 +134,7 @@
         <main class="scroll-area px-5 pt-6 space-y-5">
             <div class="glass rounded-[35px] p-5 flex justify-between items-center shadow-sm">
                 <div class="pl-2">
-                    <span class="text-[10px] font-black opacity-30 uppercase tracking-widest block mb-1">Локація</span>
+                    <span class="text-[10px] font-black opacity-30 uppercase tracking-widest block mb-1" data-i18n="loc">Локація</span>
                     <select id="l" onchange="saveSession()" class="bg-transparent font-black outline-none text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
                 </div>
                 <div class="flex gap-3">
@@ -134,23 +149,37 @@
     <div id="settingsScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Налаштування</span>
+            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10" data-i18n="settingsTitle">Налаштування</span>
         </header>
-        <main class="scroll-area px-6 pt-10 space-y-8">
+        <main class="scroll-area px-6 pt-10 space-y-6">
             <div class="glass p-6 rounded-[35px] flex justify-between items-center shadow-sm">
-                <div><h3 class="font-black text-lg">Звукові ефекти</h3><p class="text-xs opacity-40">Мелодії та кліки</p></div>
+                <div><h3 class="font-black text-lg" data-i18n="sound">Звукові ефекти</h3><p class="text-xs opacity-40" data-i18n="soundDesc">Мелодії та кліки</p></div>
                 <button onclick="toggleSetting('sound')" id="soundBtn" class="w-14 h-8 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-all shadow-inner"><div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm" id="soundDot"></div></button>
             </div>
+            <div class="glass p-6 rounded-[35px] flex justify-between items-center shadow-sm">
+                <div><h3 class="font-black text-lg" data-i18n="haptic">Вібровідгук</h3><p class="text-xs opacity-40" data-i18n="hapticDesc">Тактильна віддача</p></div>
+                <button onclick="toggleSetting('haptic')" id="hapticBtn" class="w-14 h-8 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-all shadow-inner"><div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm" id="hapticDot"></div></button>
+            </div>
             <div class="glass p-7 rounded-[40px] shadow-sm">
-                <h3 class="font-black text-lg mb-6 text-center">Теми оформлення</h3>
-                <div class="grid grid-cols-4 gap-4">
+                <h3 class="font-black text-lg mb-6 text-center" data-i18n="theme">Теми оформлення</h3>
+                <div class="grid grid-cols-5 gap-3">
                     <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#f8fafc] mx-auto ios-card" onclick="setTheme('theme-white', false)"></div>
                     <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#fbcfe8] mx-auto ios-card" onclick="setTheme('theme-pink', false)"></div>
                     <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#fef08a] mx-auto ios-card" onclick="setTheme('theme-lemon', false)"></div>
                     <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#bae6fd] mx-auto ios-card" onclick="setTheme('theme-blue', false)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#fed7aa] mx-auto ios-card flex items-center justify-center text-xl" onclick="setTheme('theme-naruto', false)">🍥</div>
+                    
                     <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#0f172a] mx-auto ios-card" onclick="setTheme('theme-black-blue', true)"></div>
                     <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#2a0808] mx-auto ios-card" onclick="setTheme('theme-black-red', true)"></div>
                     <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#064e3b] mx-auto ios-card" onclick="setTheme('theme-green-black', true)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#1a1a1a] mx-auto ios-card flex items-center justify-center text-xl" onclick="setTheme('theme-shakhtar', true)">⚒️</div>
+                </div>
+            </div>
+            <div class="glass p-6 rounded-[40px] shadow-sm mb-10">
+                <h3 class="font-black text-lg mb-4 text-center" data-i18n="lang">Мова</h3>
+                <div class="flex bg-white/30 dark:bg-black/30 rounded-2xl p-1 relative">
+                    <button onclick="setLang('uk')" id="lang-uk" class="flex-1 py-3 rounded-xl font-black text-sm transition-all shadow-sm z-10 ios-card">Українська</button>
+                    <button onclick="setLang('en')" id="lang-en" class="flex-1 py-3 rounded-xl font-black text-sm transition-all z-10 ios-card">English</button>
                 </div>
             </div>
         </main>
@@ -159,7 +188,7 @@
     <div id="archiveScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Архів</span>
+            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10" data-i18n="archive">Архів</span>
         </header>
         <div id="arcView" class="scroll-area px-5 pt-8 space-y-5"></div>
     </div>
@@ -167,27 +196,27 @@
     <div id="aboutScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Про додаток</span>
+            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10" data-i18n="about">Про додаток</span>
         </header>
         <main class="scroll-area px-8 pt-12 text-center space-y-8">
             <img src="https://iili.io/qKRx5xI.png" class="w-40 h-40 mx-auto rounded-[40px] shadow-2xl">
             <h2 class="text-4xl font-black text-[var(--primary)]">Ромасяй Cloud</h2>
             <div class="glass p-8 rounded-[40px] shadow-sm text-left">
-                <p class="font-bold opacity-80 leading-relaxed mb-4">Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.</p>
-                <p class="font-bold opacity-80 leading-relaxed">Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
+                <p class="font-bold opacity-80 leading-relaxed mb-4" data-i18n="aboutP1">Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.</p>
+                <p class="font-bold opacity-80 leading-relaxed" data-i18n="aboutP2">Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
             </div>
-            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v25</p>
+            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v26</p>
         </main>
     </div>
 
     <div id="addModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-8 backdrop-blur-xl z-[10000]">
         <div class="w-full glass p-10 rounded-[45px] space-y-8 shadow-2xl">
-            <h2 class="text-3xl font-black text-center text-emerald-500">Новий товар</h2>
+            <h2 class="text-3xl font-black text-center text-emerald-500" data-i18n="newItem">Новий товар</h2>
             <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center shadow-inner">
             <select id="newItemUnit" class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center shadow-inner"><option value="кг">кг</option><option value="шт">шт</option><option value="л">л</option><option value="мл">мл</option></select>
             <div class="flex gap-4">
-                <button onclick="closeAddModal()" class="flex-1 py-5 glass rounded-3xl font-black opacity-50 ios-card">Відміна</button>
-                <button onclick="saveNewItem()" class="flex-1 py-5 bg-emerald-500 text-white rounded-3xl font-black shadow-lg ios-card">Додати</button>
+                <button onclick="closeAddModal()" class="flex-1 py-5 glass rounded-3xl font-black opacity-50 ios-card" data-i18n="cancel">Відміна</button>
+                <button onclick="saveNewItem()" class="flex-1 py-5 bg-emerald-500 text-white rounded-3xl font-black shadow-lg ios-card" data-i18n="add">Додати</button>
             </div>
         </div>
     </div>
@@ -199,20 +228,35 @@
         const defaultRawItems=["7АП","7АП 1Л.","Авокадо","Айсберг","Ананас для Піци","Банан","Бренді Арді","Бульйон Курячий","Васабі","Васабі Ромасяй 7.5гр.","Вершки для Піци","Вино Decordi Ламбруско Напівсухе Біле (0.750л)","Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)","Вино Decordi Ламбруско Напівсухе Червоне (0.750л)","Вино Decordi Ламбруско Сухе Секо Біле (0.750л)","Вино Decordi Напівсолодке Біле (50мл.)","Вино Decordi Напівсолодке Червоне (50мл.)","Вино Decordi Сухе Червоне (50мл.)","Вино Ігристе Апостроф Брют (50мл.)","Вино ігристе Decordi Просекко (0.750л)","Вино Просекко розлив","Вино Чоя Ориджинал (50мл)","Вишня морожена","Віскі Бушмілс (50мл.)","Віскі Ват 69 (50мл.)","Віскі Гленморанж (50мл)","Віскі Джек Деніелс (50мл.)","Віскі Джек Деніелс Хані (50мл.)","Віскі Джек Деніелс Яблуко (50мл.)","Віскі Погіс (50мл.)","Віскі Ханкі Баністер (50мл.)","Вода","Вода \"Трускавецька\" (0,5л пластик)","Вода Міринда","Вода трускавецька 0,5 скл","Вода Трускавецькі 0,3 скл","Вугор","Горілка Кий","Горілка Фін (50мл.)","Горілка Фінляндія","Горілка Фінські (50мл)","Горіховий соус","Гребінець","Гриби Шиїтакі","Грудинка марочна для Піці","Десерт Моті","Джек Деніелс Яблуко","Джин Фінсбарі (50мл)","Дріжджі","Есколар масляний","Зелена цибуля","Золото","Ікра массаго Червона","Ікра тобіко","Імбір","Імбір Ромасяй 30гр.","Інарі","Кабаноссі для Піці","Кава Джемені","Каперси для Піці","Капуста Броколі","Кокосова Стружка","Коньяк Агмарті 3 роки (50мл.)","Коньяк Агмарті 5 років (50мл.)","Коньяк Хеннесі VS (50мл)","Коробка для Піці","Крамбл","Крафт-пакет","Крафтова палічка","Креветка 16/20","Крем сир для Піці","Кукурудза для Піці","Кукурудза консервована","Кунжут білий","Кунжут чорний","Куряче філе","Лайм","Лимон","Лікер Апероль (50мл.)","Лікер Бейліс (50мл.)","Лікер Єгермейстер (50мл.)","Лікер Пізан","Лікер Самбука Саутіні","Лікер Трипл Сек","Лосось копчений","Лосось філе","Майонез Провансаль","Майонез Японський","Маменорі","Манго Королівське","Манго для Піци","Мікрогрін","Мірин","Місопаста","Молоко","Морква","Морозиво в асортименті","Мука Темпура","Мука для піци","М'ята","Нитки чилі для Піці","Норі","Обліпиха морожена","Огірок","Огірок маринований для Піці","Оливки для Піци","Олія","Олія для Фритюра","Олія для піци","Омлет","Орео","Оцет рисовий","Палички","Пан Тостовий","Пармезан для Піці","Перепеліне яйце для Піці","Перець болгарський","Перець болгарський для Піці","Перець гострий","Пергамент для Піці","Пепсі","Печериці для Піці","Пиво hoegaarden (300 мл.)","Пиво stella artois (500 мл.)","Пиво stella artois Б.А (500 мл.)","Пиво Будвайзер 0.5л","Пиво Будвайзер 0.5л БА","Пиво Гамбрінус 0.5л","Пиво Клаустхаллер БА (0,5л)","Пиво Микулинецьке 0.5л","Пиво Микулинецьке 0,5 БА","Порей Цибуля","Рамен Макарон","Рисовий папір","Рис Хакумай, США","Ром Ботафого (50мл.)","Ром Капітан Морган Gold (50мл.)","Ром Капітан Морган Білий (50мл.)","Ром Карибії","Рукола","Салат айсберг для Піці","Салат чука","Салямі Італійська Для Піці","Салямі Оригінальна для Піці","Сир Дорблю для Піці","Сир Камамбер","Сир Маскарпоне","Сир Моцарела тверда","Сир Тофу","Сир Хохланд","Сирні Кульки філадельфія","Сіль","Сіроп Гренадін","Сніжний краб","Сок в асортименті","Соус Кислосолодкий","Соус Кім Чі","Соус Кунжутний Бургер","Соус Рамен","Соус Сирний для Піці","Соус Соєвий Ромасяй 50гр.","Соус Унагі","Соус Шрірача","Соус для Піци","Соус кіккоман","Соус порційний для піци","Соус сирий","Соус соєвий","Соус спайсі","Соус цезар для піци","Стружка тунця","Сусник великий","Сухарі Панко","Сухарики для Піці","Сяке Чоя (50м.)","Текіла Сієрра Сільвер (50мл.)","Тонік Евервесс","Тримачі навчальні","Тунець","Удон","Упаковка 1рол. Верх","Упаковка 1рол. Низ","Упаковка Бургер: Верх","Упаковка Бургер: Низ","Упаковка картону: Верх:","Упаковка картону: Низ:","Філе бедра для Піці","Фісташка для Піці","Фунчоза","Хамон","Холодний чай","Хундаші","Цибуля","Цибуля зелена","Цибуля червона для Піці","Цукор","Цукор в стіках","Чай в асортименті","Часник","Чорнила Каракатиці","Чіпси рисові","Шинка з Білого Мяса для Піці","Шинка традиційна для піци","Яблука","Яйце"];
         function getCat(n) { let l=n.toLowerCase(); if(l.includes('піц')||l.includes('сир')||l.includes('шинк')) return '🍕 Піца'; if(l.includes('вино')||l.includes('пиво')||l.includes('сік')||l.includes('вода')||l.includes('віскі')||l.includes('лікер')||l.includes('ром')||l.includes('тонік')||l.includes('чай')) return '🍹 Бар'; if(l.includes('упаков')||l.includes('коробк')||l.includes('паличк')||l.includes('пакет')) return '📦 Упаковка'; if(l.includes('соус')||l.includes('васабі')||l.includes('імбір')||l.includes('олія')) return '🥣 Соуси'; if(l.includes('лосось')||l.includes('вугор')||l.includes('рис')||l.includes('норі')) return '🍣 Суші'; return '🥬 Інше'; }
 
-        let PRODS = JSON.parse(localStorage.getItem('romasyay_v25_prods'));
+        let PRODS = JSON.parse(localStorage.getItem('romasyay_v26_prods'));
         if(!PRODS || PRODS.length < 50) { 
             PRODS = defaultRawItems.map(n => ({ n, u: (n.includes('мл')||n.includes('л'))?'мл':'кг', c: getCat(n) })); 
-            localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS));
+            localStorage.setItem('romasyay_v26_prods', JSON.stringify(PRODS));
         }
 
         db.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_arc', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
 
         const categories = ["Усі", "🍣 Суші", "🍕 Піца", "🍹 Бар", "🥣 Соуси", "📦 Упаковка", "🥬 Інше"];
         let currentCat = "Усі", currentUser = "";
-        
-        // ВІДНОВЛЕННЯ СЕСІЇ З ПАМ'ЯТІ
         let vals = JSON.parse(localStorage.getItem('romasyay_current_session')) || {};
-        let settings = JSON.parse(localStorage.getItem('romasyay_settings')) || { sound: true, theme: 'theme-white', isDark: false };
+        let settings = JSON.parse(localStorage.getItem('romasyay_settings')) || { sound: true, haptic: true, theme: 'theme-white', isDark: false, lang: 'uk' };
+        let startupPlayed = false;
+
+        // ПЕРЕКЛАДИ (Мова)
+        const i18n = {
+            uk: { tapToStart: "👆 ТОРКНІТЬСЯ", newInv: "Нова інвентаризація", archive: "Архів", settings: "Опції", settingsTitle: "Налаштування", about: "Про додаток", who: "Хто працює?", loc: "Локація", sound: "Звукові ефекти", soundDesc: "Мелодії та кліки", haptic: "Вібровідгук", hapticDesc: "Тактильна віддача", theme: "Тема оформлення", lang: "Мова", logout: "Вийти", newItem: "Новий товар", cancel: "Відміна", add: "Додати", aboutP1: "Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.", aboutP2: "Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢." },
+            en: { tapToStart: "👆 TAP TO START", newInv: "New Inventory", archive: "Archive", settings: "Settings", settingsTitle: "Settings", about: "About app", who: "Who is working?", loc: "Location", sound: "Sound Effects", soundDesc: "Melodies & clicks", haptic: "Haptic Feedback", hapticDesc: "Tactile response", theme: "Theme", lang: "Language", logout: "Logout", newItem: "New Item", cancel: "Cancel", add: "Add", aboutP1: "This app is not just code, but a true digital masterpiece, forged in the fire of deadlines and sleepless nights on pure enthusiasm.", aboutP2: "Anton dared to develop it when he realized that counting goods on paper in the third millennium is like trying to light a fire by rubbing two sushi sticks 🥢." }
+        };
+
+        function setLang(l) {
+            settings.lang = l;
+            localStorage.setItem('romasyay_settings', JSON.stringify(settings));
+            document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = i18n[l][el.getAttribute('data-i18n')]);
+            
+            document.getElementById('lang-uk').className = `flex-1 py-3 rounded-xl font-black text-sm transition-all z-10 ios-card ${l==='uk' ? 'bg-white dark:bg-gray-800 shadow-sm text-[var(--primary)]' : 'opacity-50'}`;
+            document.getElementById('lang-en').className = `flex-1 py-3 rounded-xl font-black text-sm transition-all z-10 ios-card ${l==='en' ? 'bg-white dark:bg-gray-800 shadow-sm text-[var(--primary)]' : 'opacity-50'}`;
+            if(settings.sound) playNeutralClick();
+        }
 
         function saveSession() {
             localStorage.setItem('romasyay_current_session', JSON.stringify(vals));
@@ -223,24 +267,33 @@
             document.documentElement.className = settings.isDark ? 'dark' : 'light';
             document.body.className = settings.theme;
             document.getElementById('theme-color-meta').content = settings.isDark ? "#0f172a" : "#f8fafc";
+            
+            // UI Оновлення повзунків
             document.getElementById('soundBtn').classList.toggle('bg-blue-600', settings.sound);
             document.getElementById('soundDot').style.left = settings.sound ? '30px' : '4px';
+            document.getElementById('hapticBtn').classList.toggle('bg-blue-600', settings.haptic);
+            document.getElementById('hapticDot').style.left = settings.haptic ? '30px' : '4px';
         }
 
-        function setTheme(t, d) { settings.theme = t; settings.isDark = d; localStorage.setItem('romasyay_settings', JSON.stringify(settings)); applyTheme(); }
+        function setTheme(t, d) { settings.theme = t; settings.isDark = d; localStorage.setItem('romasyay_settings', JSON.stringify(settings)); applyTheme(); if(settings.sound) playNeutralClick(); }
         function toggleSetting(k) { settings[k] = !settings[k]; localStorage.setItem('romasyay_settings', JSON.stringify(settings)); applyTheme(); if(settings.sound) playNeutralClick(); }
 
         function nav(s) { document.querySelectorAll('.app-screen').forEach(e => e.classList.remove('active')); document.getElementById(s).classList.add('active'); if(settings.sound) playNeutralClick(); }
-        function dismissSplash() { document.getElementById('splashScreen').classList.add('splash-hide'); nav('menuScreen'); }
+        
+        function dismissSplash() { 
+            document.getElementById('splashScreen').classList.add('splash-hide'); 
+            nav('menuScreen'); 
+            if(!startupPlayed) { playStartupMelody(); startupPlayed = true; }
+        }
 
         function initCategories() {
             document.getElementById('categoryTabs').innerHTML = categories.map(c => `<button onclick="setCategory('${c}')" class="px-6 py-2.5 rounded-full text-sm font-black transition-all ios-card ${c===currentCat?'bg-[var(--primary)] text-white shadow-lg':'glass opacity-50'}">${c}</button>`).join('');
         }
         function setCategory(c) { currentCat = c; initCategories(); render(); }
         
-        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS)); } }
+        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v26_prods', JSON.stringify(PRODS)); } }
         function rst(n) { if(confirm('Обнулити '+n+'?')) { vals[n]=0; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
-        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS)); delete vals[n]; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
+        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v26_prods', JSON.stringify(PRODS)); delete vals[n]; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
         function clearSearch() { document.getElementById('s').value = ''; render(); if(settings.sound) playNeutralClick(); }
 
         function render() {
@@ -276,48 +329,23 @@
 
         function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value=''; saveSession(); if(settings.sound)playNeutralClick();render();}}
         function startInventoryFlow() { if(currentUser) nav('inventoryScreen'); else nav('specialistScreen'); }
-        function setUserAndStart(n) { 
-            currentUser = n; 
-            document.getElementById('displayUserMenu').innerText = n; 
-            document.getElementById('displayUser').innerText = n; 
-            document.getElementById('userBadgeContainer').classList.remove('hidden'); 
-            nav('inventoryScreen'); 
-            render(); 
-        }
+        function setUserAndStart(n) { currentUser = n; document.getElementById('displayUserMenu').innerText = n; document.getElementById('displayUser').innerText = n; document.getElementById('userBadgeContainer').classList.remove('hidden'); nav('inventoryScreen'); render(); }
         function logout() { currentUser = ""; document.getElementById('userBadgeContainer').classList.add('hidden'); nav('menuScreen'); }
         
-        // ПОВЕРНУТО МИТТЄВЕ ЗБЕРЕЖЕННЯ (Оптимістичне)
         function saveData() {
             const items = PRODS.map(p => vals[p.n] > 0 ? {n:p.n, v:vals[p.n], u:p.u} : null).filter(x=>x);
             if(!items.length) return alert("Порожньо! Введіть хоча б один товар.");
-            
             const r = {id:Date.now(), user:currentUser, loc:document.getElementById('l').value, dt:new Date().toLocaleString('uk-UA'), items};
-            
-            // Локальне збереження для миттєвого відображення в архіві
-            let a = JSON.parse(localStorage.getItem('romasyay_arc')) || [];
-            a.push(r);
-            localStorage.setItem('romasyay_arc', JSON.stringify(a));
-            
-            // Відправка в Firebase
+            let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; a.push(r); localStorage.setItem('romasyay_arc', JSON.stringify(a));
             db.ref('inventories/'+r.id).set(r).catch(e => console.error(e));
-            
-            vals = {};
-            saveSession();
-            playPianoSuccess();
-            render();
-            setTimeout(() => alert("✅ Збережено в хмару!"), 300);
+            vals = {}; saveSession(); playPianoSuccess(); render(); setTimeout(() => alert("✅ Збережено в хмару!"), 300);
         }
 
-        // ПОВЕРНУТО ВІДПРАВКУ В ТЕЛЕГРАМ (Літачок)
         function sendToTelegram() {
             const items = PRODS.map(p => vals[p.n] > 0 ? `${p.n}: ${vals[p.n]} ${p.u}` : null).filter(x=>x);
             if(!items.length) return alert("Немає даних для відправки!");
             const t = `📊 ІНВЕНТУРА\n👤: ${currentUser}\n📍: ${document.getElementById('l').value}\n📅: ${new Date().toLocaleString('uk-UA')}\n\n${items.join('\n')}`;
-            if(navigator.share) {
-                navigator.share({title: 'Інвентаризація', text: t}).catch(e=>console.log(e));
-            } else {
-                window.location.href = `https://t.me/share/url?url=&text=${encodeURIComponent(t)}`;
-            }
+            if(navigator.share) { navigator.share({title: 'Інвентаризація', text: t}).catch(e=>console.log(e)); } else { window.location.href = `https://t.me/share/url?url=&text=${encodeURIComponent(t)}`; }
         }
 
         function loadArchive() {
@@ -337,24 +365,32 @@
         function editArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; let idx = a.findIndex(x=>x.id===id); if(idx>-1) { let i = a[idx]; vals = {}; i.items.forEach(x=>vals[x.n]=x.v); document.getElementById('l').value = i.loc; a.splice(idx,1); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove(); saveSession(); nav('inventoryScreen'); render(); alert("✅ Завантажено для редагування."); } }
         function deleteCloudArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); if(!confirm("Видалити назавжди?")) return; let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; a = a.filter(x=>x.id!==id); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove().then(()=>{ loadArchive(); if(settings.sound) playNeutralClick(); }); }
 
-        function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(8); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
-        function playPianoSuccess() { try { let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523,659,1046].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
+        // МЕЛОДІЯ ЗАВАНТАЖЕННЯ ТА КЛІКИ
+        function playStartupMelody() {
+            if(!settings.sound) return;
+            try {
+                let c = new (window.AudioContext || window.webkitAudioContext)();
+                let t = c.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                    let o = c.createOscillator(), g = c.createGain();
+                    o.frequency.value = f;
+                    g.gain.setValueAtTime(0, t);
+                    g.gain.linearRampToValueAtTime(0.2, t + i * 0.1 + 0.05);
+                    g.gain.linearRampToValueAtTime(0, t + i * 0.1 + 0.4);
+                    o.connect(g); g.connect(c.destination);
+                    o.start(t + i * 0.1); o.stop(t + i * 0.1 + 0.5);
+                });
+            } catch(e) {}
+        }
+        function playNeutralClick() { if(settings.haptic && navigator.vibrate) navigator.vibrate(8); if(!settings.sound) return; try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
+        function playPianoSuccess() { if(!settings.sound) return; try { let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523,659,1046].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
         
         function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
         function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
-        
-        // ТЕПЕР ЗБЕРЕЖЕННЯ ОДРАЗУ ЗАКРИВАЄ ВІКНО
         function saveNewItem() { 
-            const n = document.getElementById('newItemName').value.trim();
-            const u = document.getElementById('newItemUnit').value;
-            if(!n) return alert("Введіть назву!");
-            if(PRODS.some(p => p.n.toLowerCase() === n.toLowerCase())) return alert("Вже є в базі!");
-            PRODS.push({n, u, c: getCat(n)});
-            localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS));
-            closeAddModal();
-            document.getElementById('newItemName').value = '';
-            render();
-            if(settings.sound) playNeutralClick();
+            const n = document.getElementById('newItemName').value.trim(); const u = document.getElementById('newItemUnit').value;
+            if(!n) return alert("Введіть назву!"); if(PRODS.some(p => p.n.toLowerCase() === n.toLowerCase())) return alert("Вже є в базі!");
+            PRODS.push({n, u, c: getCat(n)}); localStorage.setItem('romasyay_v26_prods', JSON.stringify(PRODS)); closeAddModal(); document.getElementById('newItemName').value = ''; render(); if(settings.sound) playNeutralClick();
         }
 
         function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('hidden'); if(!c.classList.contains('hidden')) document.getElementById('s').focus(); }
@@ -362,6 +398,7 @@
 
         window.onload = () => { 
             applyTheme(); 
+            setLang(settings.lang || 'uk');
             initCategories(); 
             render(); 
             let savedLoc = localStorage.getItem('romasyay_current_loc');
