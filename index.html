@@ -7,9 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ромасяй">
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v20</title>
+    <title>Ромасяй Cloud v23</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -29,144 +28,159 @@
         .theme-black-red { --bg-grad-1: #2a0808; --bg-grad-2: #000000; --text-main: #fecaca; --primary: #f87171; }
         .theme-green-black { --bg-grad-1: #064e3b; --bg-grad-2: #020617; --text-main: #a7f3d0; --primary: #34d399; }
 
-        html, body { 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
-            background: var(--bg-grad-1); /* Фікс білої полоси */
-        }
-        body { 
-            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%) no-repeat fixed; 
-            font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; 
-            color: var(--text-main); width: 100%; 
-            user-select: none; -webkit-user-select: none; 
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; color: var(--text-main); user-select: none; -webkit-user-select: none; }
+        
+        /* ФОН НЕРУХОМИЙ - лікує білу смугу */
+        .fixed-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%); z-index: -1; }
 
         .glass { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
-        .ios-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .ios-card:active { transform: scale(0.94); opacity: 0.8; }
+        .ios-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s; cursor: pointer; }
+        .ios-card:active { transform: scale(0.96); opacity: 0.8; }
 
-        .app-screen { display: none; min-height: 100dvh; width: 100vw; flex-direction: column; }
+        .app-screen { display: none; height: 100dvh; width: 100vw; flex-direction: column; position: absolute; top: 0; left: 0; }
         .app-screen.active { display: flex; animation: slideIn 0.3s ease-out forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
+        .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 150px; }
         
-        /* Стандартний відступ для основного екрану */
-        .safe-pt { padding-top: calc(env(safe-area-inset-top) + 0.5rem); }
+        /* ЖОРСТКІ ВІДСТУПИ ДЛЯ АЙФОНА (Захист від годинника) */
+        .safe-pt-menu { padding-top: max(80px, env(safe-area-inset-top)); }
+        .safe-pt-header { padding-top: max(65px, env(safe-area-inset-top)); padding-bottom: 15px; }
+
+        .icon-btn { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .icon-btn svg { width: 28px; height: 28px; stroke-width: 3px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* СПЕЦІАЛЬНИЙ ВІДСТУП ДЛЯ НАЛАШТУВАНЬ ТА АРХІВУ (нижче стрілка) */
-        .settings-header { 
-            padding-top: calc(env(safe-area-inset-top) + 1.2rem) !important; 
-            padding-bottom: 1rem;
-        }
-
-        .icon-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-        .icon-btn svg { width: 24px; height: 24px; stroke-width: 3px; }
-
         #splashScreen.splash-hide { opacity: 0; pointer-events: none; transition: 0.5s; }
     </style>
 </head>
 <body class="theme-white">
-    <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/5 backdrop-blur-2xl flex flex-col items-center justify-center z-[9999]">
-        <img src="https://iili.io/qKRx5xI.png" class="w-40 h-40 object-contain rounded-3xl shadow-xl animate-pulse">
-        <div class="mt-8 px-6 py-3 glass rounded-full font-black text-sm animate-bounce">👆 ТОРКНІТЬСЯ</div>
+    <div class="fixed-bg"></div>
+
+    <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/10 backdrop-blur-2xl flex flex-col items-center justify-center z-[9999]">
+        <img src="https://iili.io/qKRx5xI.png" class="w-44 h-44 object-contain rounded-[40px] shadow-2xl animate-pulse">
+        <div class="mt-10 px-8 py-4 glass rounded-full font-black text-sm animate-bounce tracking-widest">👆 ТОРКНІТЬСЯ</div>
     </div>
 
     <div id="menuScreen" class="app-screen">
-        <div class="scroll-area px-5 pt-10 safe-pt">
-            <div class="flex justify-between items-center mb-6">
+        <div class="scroll-area px-6 safe-pt-menu">
+            <div class="flex justify-between items-center mb-8">
                 <div id="userBadgeContainer" class="hidden flex items-center">
-                    <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-3 py-1.5 rounded-full uppercase shadow-sm"></span>
-                    <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-2">Вийти</button>
+                    <span id="displayUserMenu" class="text-xs font-black bg-[var(--primary)] text-white px-4 py-2 rounded-full uppercase shadow-md"></span>
+                    <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-3">Вийти</button>
                 </div>
                 <div class="flex-1"></div>
-                <button onclick="nav('settingsScreen')" class="glass w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm">🎨</button>
+                <button onclick="nav('settingsScreen')" class="glass w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm">🎨</button>
             </div>
             <div class="text-center mb-12">
-                <h1 class="text-5xl font-black tracking-tight">Ромасяй</h1>
-                <p class="text-xs font-black opacity-30 uppercase tracking-[0.3em] mt-1">Cloud Inventory</p>
+                <h1 class="text-6xl font-black tracking-tight">Ромасяй</h1>
+                <p class="text-[11px] font-black opacity-30 uppercase tracking-[0.4em] mt-3">Cloud Inventory</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="startInventoryFlow()" class="glass p-8 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card col-span-2 shadow-sm bg-[var(--primary)]/5">
-                    <span class="text-4xl">📝</span><span class="font-black text-lg">Почати</span>
+                <button onclick="startInventoryFlow()" class="glass p-10 rounded-[40px] flex flex-col items-center justify-center gap-4 ios-card col-span-2 shadow-sm relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[var(--primary)] opacity-5"></div>
+                    <span class="text-5xl">📝</span><span class="font-black text-xl">Почати</span>
                 </button>
-                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black">Архів</span></button>
-                <button onclick="nav('settingsScreen')" class="glass p-6 rounded-[35px] flex flex-col items-center justify-center gap-2 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black">Опції</span></button>
+                <button onclick="nav('archiveScreen'); loadArchive();" class="glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black">Архів</span></button>
+                <button onclick="nav('settingsScreen')" class="glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black">Опції</span></button>
+                <button onclick="nav('aboutScreen')" class="glass p-6 rounded-[35px] flex items-center justify-center gap-3 ios-card col-span-2 shadow-sm"><span class="text-2xl">ℹ️</span><span class="font-black text-sm uppercase tracking-widest opacity-70">Про додаток</span></button>
             </div>
         </div>
     </div>
 
     <div id="specialistScreen" class="app-screen">
-        <header class="p-4 flex items-center safe-pt"><button onclick="nav('menuScreen')" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button></header>
+        <header class="glass rounded-b-[40px] shadow-sm flex items-center px-4 safe-pt-header shrink-0"><button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button></header>
         <div class="flex-1 flex flex-col justify-center items-center px-10 gap-6">
-            <h2 class="text-3xl font-black mb-4">Хто працює?</h2>
-            <button onclick="setUserAndStart('Антон 🚀')" class="w-full py-6 rounded-[30px] font-black text-xl glass ios-card shadow-md text-blue-600">Антон 🚀</button>
-            <button onclick="setUserAndStart('Марія 🌺')" class="w-full py-6 rounded-[30px] font-black text-xl glass ios-card shadow-md text-pink-600">Марія 🌺</button>
+            <h2 class="text-4xl font-black mb-6 text-center">Хто працює?</h2>
+            <button onclick="setUserAndStart('Антон 🚀')" class="w-full py-7 rounded-[35px] font-black text-2xl glass ios-card shadow-md text-blue-600">Антон 🚀</button>
+            <button onclick="setUserAndStart('Марія 🌺')" class="w-full py-7 rounded-[35px] font-black text-2xl glass ios-card shadow-md text-pink-600">Марія 🌺</button>
         </div>
     </div>
 
     <div id="inventoryScreen" class="app-screen">
-        <header class="glass pb-4 rounded-b-[40px] shadow-sm safe-pt z-50">
-            <div class="flex justify-between items-center px-4 pt-2">
-                <button onclick="nav('menuScreen')" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-                <span id="displayUser" class="text-[10px] font-black bg-[var(--primary)] text-white px-3 py-1 rounded-full uppercase"></span>
+        <header class="glass rounded-b-[45px] shadow-sm safe-pt-header shrink-0 z-50">
+            <div class="flex justify-between items-center px-5">
+                <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+                <span id="displayUser" class="text-xs font-black bg-[var(--primary)] text-white px-4 py-2 rounded-full uppercase shadow-md"></span>
                 <div class="flex gap-2">
                     <button onclick="toggleSearch()" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button>
-                    <button onclick="openAddModal()" class="w-10 h-10 bg-emerald-500 text-white rounded-full text-2xl font-light shadow-lg">+</button>
+                    <button onclick="openAddModal()" class="w-12 h-12 bg-emerald-500 text-white rounded-full text-3xl font-light shadow-lg">+</button>
                 </div>
             </div>
-            <div id="searchBarContainer" class="px-5 hidden"><input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/40 dark:bg-black/20 rounded-2xl p-3 outline-none font-bold mt-2" onkeyup="render()"></div>
-            <div class="w-full overflow-x-auto flex gap-2 px-5 mt-4" id="categoryTabs"></div>
+            <div id="searchBarContainer" class="px-6 hidden"><input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/50 dark:bg-black/20 rounded-2xl p-4 outline-none font-bold mt-4 shadow-inner" onkeyup="render()"></div>
+            <div class="w-full overflow-x-auto flex gap-3 px-6 mt-5 hide-scrollbar" id="categoryTabs"></div>
         </header>
-        <main class="scroll-area px-4 pt-6 space-y-4">
-            <div class="glass rounded-[30px] p-4 flex justify-between items-center bg-[var(--primary)]/5">
+        <main class="scroll-area px-5 pt-6 space-y-5">
+            <div class="glass rounded-[35px] p-5 flex justify-between items-center shadow-sm">
                 <div class="pl-2">
-                    <span class="text-[9px] font-black opacity-30 uppercase tracking-widest">Локація</span>
-                    <select id="l" class="bg-transparent font-black outline-none text-xl block text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
+                    <span class="text-[10px] font-black opacity-30 uppercase tracking-widest block mb-1">Локація</span>
+                    <select id="l" class="bg-transparent font-black outline-none text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="sendToTelegram()" class="glass w-12 h-12 flex items-center justify-center rounded-2xl text-xl">✈️</button>
-                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-lg relative">💾</button>
+                    <button onclick="sendToTelegram()" class="glass w-14 h-14 flex items-center justify-center rounded-2xl text-2xl ios-card">✈️</button>
+                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-lg ios-card">💾</button>
                 </div>
             </div>
-            <div id="lst" class="space-y-3"></div>
+            <div id="lst" class="space-y-4"></div>
         </main>
     </div>
 
     <div id="settingsScreen" class="app-screen">
-        <header class="glass rounded-b-[40px] shadow-sm z-50 flex items-center px-4 settings-header">
+        <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-            <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Налаштування</span>
+            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Налаштування</span>
         </header>
-        <main class="scroll-area px-5 pt-8 space-y-6">
-            <div class="glass p-5 rounded-[30px] flex justify-between items-center">
-                <div><h3 class="font-bold">Звук</h3><p class="text-[10px] opacity-40">Кліки та мелодії</p></div>
-                <button onclick="toggleSetting('sound')" id="soundBtn" class="w-12 h-7 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors"><div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-all" id="soundDot"></div></button>
+        <main class="scroll-area px-6 pt-10 space-y-8">
+            <div class="glass p-6 rounded-[35px] flex justify-between items-center shadow-sm">
+                <div><h3 class="font-black text-lg">Звук</h3><p class="text-xs opacity-40">Мелодії та кліки</p></div>
+                <button onclick="toggleSetting('sound')" id="soundBtn" class="w-14 h-8 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-all"><div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm" id="soundDot"></div></button>
             </div>
-            <div class="glass p-6 rounded-[35px]">
-                <h3 class="font-bold mb-4">Тема</h3>
-                <div class="grid grid-cols-5 gap-3 mb-6" id="themeGrid"></div>
+            <div class="glass p-7 rounded-[40px] shadow-sm">
+                <h3 class="font-black text-lg mb-6 text-center">Теми оформлення</h3>
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#f8fafc] mx-auto ios-card" onclick="setTheme('theme-white', false)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#fbcfe8] mx-auto ios-card" onclick="setTheme('theme-pink', false)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#fef08a] mx-auto ios-card" onclick="setTheme('theme-lemon', false)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-white shadow bg-[#bae6fd] mx-auto ios-card" onclick="setTheme('theme-blue', false)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#0f172a] mx-auto ios-card" onclick="setTheme('theme-black-blue', true)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#2a0808] mx-auto ios-card" onclick="setTheme('theme-black-red', true)"></div>
+                    <div class="w-12 h-12 rounded-full border-2 border-gray-600 shadow bg-[#064e3b] mx-auto ios-card" onclick="setTheme('theme-green-black', true)"></div>
+                </div>
             </div>
         </main>
     </div>
 
     <div id="archiveScreen" class="app-screen">
-        <header class="glass rounded-b-[40px] shadow-sm z-50 flex items-center px-4 settings-header">
+        <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
             <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
-            <span class="font-black text-lg tracking-widest uppercase flex-1 text-center pr-10">Архів</span>
+            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Архів</span>
         </header>
-        <div id="arcView" class="scroll-area px-4 pt-6 space-y-4"></div>
+        <div id="arcView" class="scroll-area px-5 pt-8 space-y-5"></div>
     </div>
 
-    <div id="addModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-8 backdrop-blur-md z-[10000]">
-        <div class="w-full glass p-8 rounded-[40px] space-y-6">
-            <h2 class="text-2xl font-black text-center text-emerald-500">Новий товар</h2>
-            <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-4 glass rounded-2xl outline-none font-bold text-center">
-            <select id="newItemUnit" class="w-full p-4 glass rounded-2xl outline-none font-bold text-center"><option>кг</option><option>шт</option><option>л</option><option>мл</option></select>
-            <div class="flex gap-3">
-                <button onclick="closeAddModal()" class="flex-1 p-4 glass rounded-2xl font-bold opacity-50">Відміна</button>
-                <button onclick="saveNewItem()" class="flex-1 p-4 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg">Додати</button>
+    <div id="aboutScreen" class="app-screen">
+        <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
+            <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+            <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Про додаток</span>
+        </header>
+        <main class="scroll-area px-8 pt-12 text-center space-y-8">
+            <img src="https://iili.io/qKRx5xI.png" class="w-40 h-40 mx-auto rounded-[40px] shadow-2xl">
+            <h2 class="text-4xl font-black text-[var(--primary)]">Ромасяй Cloud</h2>
+            <div class="glass p-8 rounded-[40px] shadow-sm">
+                <p class="font-bold opacity-80 leading-relaxed">Система хмарної інвентаризації. Створена для швидкого та зручного обліку товарів на базі Firebase.</p>
+            </div>
+            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">v1.0 Masterpiece v23 © 2026</p>
+        </main>
+    </div>
+
+    <div id="addModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-8 backdrop-blur-xl z-[10000]">
+        <div class="w-full glass p-10 rounded-[45px] space-y-8 shadow-2xl">
+            <h2 class="text-3xl font-black text-center text-emerald-500">Новий товар</h2>
+            <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center">
+            <select id="newItemUnit" class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center"><option>кг</option><option>шт</option><option>л</option><option>мл</option></select>
+            <div class="flex gap-4">
+                <button onclick="closeAddModal()" class="flex-1 py-5 glass rounded-3xl font-black opacity-50 ios-card">Відміна</button>
+                <button onclick="saveNewItem()" class="flex-1 py-5 bg-emerald-500 text-white rounded-3xl font-black shadow-lg ios-card">Додати</button>
             </div>
         </div>
     </div>
@@ -174,19 +188,99 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyAfSPpB0l2whC6A9q596fFU-VwYTluN1vY", authDomain: "romasyay-cloud.firebaseapp.com", databaseURL: "https://romasyay-cloud-default-rtdb.europe-west1.firebasedatabase.app", projectId: "romasyay-cloud", storageBucket: "romasyay-cloud.firebasestorage.app", messagingSenderId: "515733482243", appId: "1:515733482243:web:26e286e071fd3621859736" };
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
-        
+
+        // ТВЕРДІ ДАНІ - Товари, які більше ніколи не зникнуть
+        const initialProducts = [
+            {n: "7АП", u: "мл", c: "🍹 Бар"}, {n: "7АП 1Л.", u: "мл", c: "🍹 Бар"}, {n: "Авокадо", u: "кг", c: "🥬 Інше"}, 
+            {n: "Айсберг", u: "кг", c: "🥬 Інше"}, {n: "Ананас для Піци", u: "кг", c: "🍕 Піца"}, {n: "Банан", u: "кг", c: "🥬 Інше"}, 
+            {n: "Бренді Арді", u: "мл", c: "🍹 Бар"}, {n: "Бульйон Курячий", u: "л", c: "🥬 Інше"}, {n: "Васабі", u: "кг", c: "🥣 Соуси"}, 
+            {n: "Васабі Ромасяй 7.5гр.", u: "шт", c: "🥣 Соуси"}, {n: "Вершки для Піци", u: "л", c: "🍕 Піца"}, {n: "Вино Decordi Ламбруско Напівсухе Біле (0.750л)", u: "шт", c: "🍹 Бар"}, 
+            {n: "Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)", u: "шт", c: "🍹 Бар"}, {n: "Вино Decordi Ламбруско Напівсухе Червоне (0.750л)", u: "шт", c: "🍹 Бар"}, 
+            {n: "Вино Decordi Ламбруско Сухе Секо Біле (0.750л)", u: "шт", c: "🍹 Бар"}, {n: "Вино Decordi Напівсолодке Біле (50мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Вино Decordi Напівсолодке Червоне (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Вино Decordi Сухе Червоне (50мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Вино Ігристе Апостроф Брют (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Вино ігристе Decordi Просекко (0.750л)", u: "шт", c: "🍹 Бар"}, 
+            {n: "Вино Просекко розлив", u: "мл", c: "🍹 Бар"}, {n: "Вино Чоя Ориджинал (50мл)", u: "мл", c: "🍹 Бар"}, {n: "Вишня морожена", u: "кг", c: "🥬 Інше"}, 
+            {n: "Віскі Бушмілс (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Ват 69 (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Гленморанж (50мл)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Віскі Джек Деніелс (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Джек Деніелс Хані (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Джек Деніелс Яблуко (50мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Віскі Погіс (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Ханкі Баністер (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Вода", u: "л", c: "🍹 Бар"}, 
+            {n: "Вода \"Трускавецька\" (0,5л пластик)", u: "шт", c: "🍹 Бар"}, {n: "Вода Міринда", u: "мл", c: "🍹 Бар"}, {n: "Вода трускавецька 0,5 скл", u: "шт", c: "🍹 Бар"}, 
+            {n: "Вода Трускавецькі 0,3 скл", u: "шт", c: "🍹 Бар"}, {n: "Вугор", u: "кг", c: "🍣 Суші"}, {n: "Горілка Кий", u: "мл", c: "🍹 Бар"}, 
+            {n: "Горілка Фін (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Горілка Фінляндія", u: "мл", c: "🍹 Бар"}, {n: "Горілка Фінські (50мл)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Горіховий соус", u: "мл", c: "🥣 Соуси"}, {n: "Гребінець", u: "кг", c: "🍣 Суші"}, {n: "Гриби Шиїтакі", u: "кг", c: "🥬 Інше"}, 
+            {n: "Грудинка марочна для Піці", u: "кг", c: "🍕 Піца"}, {n: "Десерт Моті", u: "шт", c: "🥬 Інше"}, {n: "Джек Деніелс Яблуко", u: "мл", c: "🍹 Бар"}, 
+            {n: "Джин Фінсбарі (50мл)", u: "мл", c: "🍹 Бар"}, {n: "Дріжджі", u: "кг", c: "🥬 Інше"}, {n: "Есколар масляний", u: "кг", c: "🥬 Інше"}, 
+            {n: "Зелена цибуля", u: "кг", c: "🥬 Інше"}, {n: "Золото", u: "шт", c: "🥬 Інше"}, {n: "Ікра массаго Червона", u: "кг", c: "🍣 Суші"}, 
+            {n: "Ікра тобіко", u: "кг", c: "🍣 Суші"}, {n: "Імбір", u: "кг", c: "🥣 Соуси"}, {n: "Імбір Ромасяй 30гр.", u: "шт", c: "🥣 Соуси"}, 
+            {n: "Інарі", u: "шт", c: "🍣 Суші"}, {n: "Кабаноссі для Піці", u: "кг", c: "🍕 Піца"}, {n: "Кава Джемені", u: "кг", c: "🍹 Бар"}, 
+            {n: "Каперси для Піці", u: "кг", c: "🍕 Піца"}, {n: "Капуста Броколі", u: "кг", c: "🥬 Інше"}, {n: "Кокосова Стружка", u: "кг", c: "🥬 Інше"}, 
+            {n: "Коньяк Агмарті 3 роки (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Коньяк Агмарті 5 років (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Коньяк Хеннесі VS (50мл)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Коробка для Піці", u: "шт", c: "📦 Упаковка"}, {n: "Крамбл", u: "кг", c: "🥬 Інше"}, {n: "Крафт-пакет", u: "шт", c: "📦 Упаковка"}, 
+            {n: "Крафтова палічка", u: "шт", c: "📦 Упаковка"}, {n: "Креветка 16/20", u: "кг", c: "🍣 Суші"}, {n: "Крем сир для Піці", u: "кг", c: "🍕 Піца"}, 
+            {n: "Кукурудза для Піці", u: "кг", c: "🍕 Піца"}, {n: "Кукурудза консервована", u: "кг", c: "🥬 Інше"}, {n: "Кунжут білий", u: "кг", c: "🍣 Суші"}, 
+            {n: "Кунжут чорний", u: "кг", c: "🍣 Суші"}, {n: "Куряче філе", u: "кг", c: "🥬 Інше"}, {n: "Лайм", u: "кг", c: "🥬 Інше"}, 
+            {n: "Лимон", u: "кг", c: "🥬 Інше"}, {n: "Лікер Апероль (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Лікер Бейліс (50мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Лікер Єгермейстер (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Лікер Пізан", u: "мл", c: "🍹 Бар"}, {n: "Лікер Самбука Саутіні", u: "мл", c: "🍹 Бар"}, 
+            {n: "Лікер Трипл Сек", u: "мл", c: "🍹 Бар"}, {n: "Лосось копчений", u: "кг", c: "🍣 Суші"}, {n: "Лосось філе", u: "кг", c: "🍣 Суші"}, 
+            {n: "Майонез Провансаль", u: "л", c: "🥣 Соуси"}, {n: "Майонез Японський", u: "л", c: "🥣 Соуси"}, {n: "Маменорі", u: "шт", c: "🍣 Суші"}, 
+            {n: "Манго Королівське", u: "кг", c: "🥬 Інше"}, {n: "Манго для Піци", u: "кг", c: "🍕 Піца"}, {n: "Мікрогрін", u: "шт", c: "🥬 Інше"}, 
+            {n: "Мірин", u: "л", c: "🥣 Соуси"}, {n: "Місопаста", u: "кг", c: "🥣 Соуси"}, {n: "Молоко", u: "л", c: "🥬 Інше"}, 
+            {n: "Морква", u: "кг", c: "🥬 Інше"}, {n: "Морозиво в асортименті", u: "кг", c: "🥬 Інше"}, {n: "Мука Темпура", u: "кг", c: "🥬 Інше"}, 
+            {n: "Мука для піци", u: "кг", c: "🍕 Піца"}, {n: "М'ята", u: "кг", c: "🥬 Інше"}, {n: "Нитки чилі для Піці", u: "кг", c: "🍕 Піца"}, 
+            {n: "Норі", u: "шт", c: "🍣 Суші"}, {n: "Обліпиха морожена", u: "кг", c: "🥬 Інше"}, {n: "Огірок", u: "кг", c: "🥬 Інше"}, 
+            {n: "Огірок маринований для Піці", u: "кг", c: "🍕 Піца"}, {n: "Оливки для Піци", u: "кг", c: "🍕 Піца"}, {n: "Олія", u: "л", c: "🥣 Соуси"}, 
+            {n: "Олія для Фритюра", u: "л", c: "🥣 Соуси"}, {n: "Олія для піци", u: "л", c: "🍕 Піца"}, {n: "Омлет", u: "кг", c: "🥬 Інше"}, 
+            {n: "Орео", u: "кг", c: "🍕 Піца"}, {n: "Оцет рисовий", u: "л", c: "🥣 Соуси"}, {n: "Палички", u: "шт", c: "📦 Упаковка"}, 
+            {n: "Пан Тостовий", u: "шт", c: "🥬 Інше"}, {n: "Пармезан для Піці", u: "кг", c: "🍕 Піца"}, {n: "Перепеліне яйце для Піці", u: "шт", c: "🍕 Піца"}, 
+            {n: "Перець болгарський", u: "кг", c: "🥬 Інше"}, {n: "Перець болгарський для Піці", u: "кг", c: "🍕 Піца"}, {n: "Перець гострий", u: "кг", c: "🥬 Інше"}, 
+            {n: "Пергамент для Піці", u: "шт", c: "📦 Упаковка"}, {n: "Пепсі", u: "мл", c: "🍹 Бар"}, {n: "Печериці для Піці", u: "кг", c: "🍕 Піца"}, 
+            {n: "Пиво hoegaarden (300 мл.)", u: "мл", c: "🍹 Бар"}, {n: "Пиво stella artois (500 мл.)", u: "мл", c: "🍹 Бар"}, {n: "Пиво stella artois Б.А (500 мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Пиво Будвайзер 0.5л", u: "шт", c: "🍹 Бар"}, {n: "Пиво Будвайзер 0.5л БА", u: "шт", c: "🍹 Бар"}, {n: "Пиво Гамбрінус 0.5л", u: "шт", c: "🍹 Бар"}, 
+            {n: "Пиво Клаустхаллер БА (0,5л)", u: "шт", c: "🍹 Бар"}, {n: "Пиво Микулинецьке 0.5л", u: "шт", c: "🍹 Бар"}, {n: "Пиво Микулинецьке 0,5 БА", u: "шт", c: "🍹 Бар"}, 
+            {n: "Порей Цибуля", u: "кг", c: "🥬 Інше"}, {n: "Рамен Макарон", u: "кг", c: "🥬 Інше"}, {n: "Рисовий папір", u: "шт", c: "🍣 Суші"}, 
+            {n: "Рис Хакумай, США", u: "кг", c: "🍣 Суші"}, {n: "Ром Ботафого (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Ром Капітан Морган Gold (50мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Ром Капітан Морган Білий (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Ром Карибії", u: "мл", c: "🍹 Бар"}, {n: "Рукола", u: "кг", c: "🍕 Піца"}, 
+            {n: "Салат айсберг для Піці", u: "кг", c: "🍕 Піца"}, {n: "Салат чука", u: "кг", c: "🍣 Суші"}, {n: "Салямі Італійська Для Піці", u: "кг", c: "🍕 Піца"}, 
+            {n: "Салямі Оригінальна для Піці", u: "кг", c: "🍕 Піца"}, {n: "Сир Дорблю для Піці", u: "кг", c: "🍕 Піца"}, {n: "Сир Камамбер", u: "кг", c: "🍕 Піца"}, 
+            {n: "Сир Маскарпоне", u: "кг", c: "🍕 Піца"}, {n: "Сир Моцарела тверда", u: "кг", c: "🍕 Піца"}, {n: "Сир Тофу", u: "кг", c: "🍕 Піца"}, 
+            {n: "Сир Хохланд", u: "кг", c: "🍕 Піца"}, {n: "Сирні Кульки філадельфія", u: "шт", c: "🍕 Піца"}, {n: "Сіль", u: "кг", c: "🥬 Інше"}, 
+            {n: "Сіроп Гренадін", u: "мл", c: "🍹 Бар"}, {n: "Сніжний краб", u: "кг", c: "🍣 Суші"}, {n: "Сок в асортименті", u: "л", c: "🍹 Бар"}, 
+            {n: "Соус Кислосолодкий", u: "л", c: "🥣 Соуси"}, {n: "Соус Кім Чі", u: "л", c: "🥣 Соуси"}, {n: "Соус Кунжутний Бургер", u: "л", c: "🥣 Соуси"}, 
+            {n: "Соус Рамен", u: "л", c: "🥣 Соуси"}, {n: "Соус Сирний для Піці", u: "л", c: "🥣 Соуси"}, {n: "Соус Соєвий Ромасяй 50гр.", u: "шт", c: "🥣 Соуси"}, 
+            {n: "Соус Унагі", u: "л", c: "🥣 Соуси"}, {n: "Соус Шрірача", u: "л", c: "🥣 Соуси"}, {n: "Соус для Піци", u: "л", c: "🥣 Соуси"}, 
+            {n: "Соус кіккоман", u: "л", c: "🥣 Соуси"}, {n: "Соус порційний для піци", u: "шт", c: "🥣 Соуси"}, {n: "Соус сирий", u: "л", c: "🥣 Соуси"}, 
+            {n: "Соус соєвий", u: "л", c: "🥣 Соуси"}, {n: "Соус спайсі", u: "л", c: "🥣 Соуси"}, {n: "Соус цезар для піци", u: "л", c: "🥣 Соуси"}, 
+            {n: "Стружка тунця", u: "кг", c: "🍣 Суші"}, {n: "Сусник великий", u: "шт", c: "📦 Упаковка"}, {n: "Сухарі Панко", u: "кг", c: "🥬 Інше"}, 
+            {n: "Сухарики для Піці", u: "кг", c: "🍕 Піца"}, {n: "Сяке Чоя (50м.)", u: "мл", c: "🍹 Бар"}, {n: "Текіла Сієрра Сільвер (50мл.)", u: "мл", c: "🍹 Бар"}, 
+            {n: "Тонік Евервесс", u: "мл", c: "🍹 Бар"}, {n: "Тримачі навчальні", u: "шт", c: "📦 Упаковка"}, {n: "Тунець", u: "кг", c: "🍣 Суші"}, 
+            {n: "Удон", u: "кг", c: "🥬 Інше"}, {n: "Упаковка 1рол. Верх", u: "шт", c: "📦 Упаковка"}, {n: "Упаковка 1рол. Низ", u: "шт", c: "📦 Упаковка"}, 
+            {n: "Упаковка Бургер: Верх", u: "шт", c: "📦 Упаковка"}, {n: "Упаковка Бургер: Низ", u: "шт", c: "📦 Упаковка"}, {n: "Упаковка картону: Верх:", u: "шт", c: "📦 Упаковка"}, 
+            {n: "Упаковка картону: Низ:", u: "шт", c: "📦 Упаковка"}, {n: "Філе бедра для Піці", u: "кг", c: "🍕 Піца"}, {n: "Фісташка для Піці", u: "кг", c: "🍕 Піца"}, 
+            {n: "Фунчоза", u: "кг", c: "🥬 Інше"}, {n: "Хамон", u: "кг", c: "🥬 Інше"}, {n: "Холодний чай", u: "л", c: "🍹 Бар"}, 
+            {n: "Хундаші", u: "кг", c: "🥬 Інше"}, {n: "Цибуля", u: "кг", c: "🥬 Інше"}, {n: "Цибуля зелена", u: "кг", c: "🥬 Інше"}, 
+            {n: "Цибуля червона для Піці", u: "кг", c: "🍕 Піца"}, {n: "Цукор", u: "кг", c: "🥬 Інше"}, {n: "Цукор в стіках", u: "шт", c: "🥬 Інше"}, 
+            {n: "Чай в асортименті", u: "шт", c: "🍹 Бар"}, {n: "Часник", u: "кг", c: "🥬 Інше"}, {n: "Чорнила Каракатиці", u: "мл", c: "🥬 Інше"}, 
+            {n: "Чіпси рисові", u: "кг", c: "🥬 Інше"}, {n: "Шинка з Білого Мяса для Піці", u: "кг", c: "🍕 Піца"}, {n: "Шинка традиційна для піци", u: "кг", c: "🍕 Піца"}, 
+            {n: "Яблука", u: "кг", c: "🥬 Інше"}, {n: "Яйце", u: "шт", c: "🥬 Інше"}
+        ];
+
+        let PRODS = JSON.parse(localStorage.getItem('romasyay_v23_prods'));
+        if(!PRODS || PRODS.length < 50) { 
+            PRODS = initialProducts;
+            localStorage.setItem('romasyay_v23_prods', JSON.stringify(PRODS));
+        }
+
         db.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_arc', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
 
         const categories = ["Усі", "🍣 Суші", "🍕 Піца", "🍹 Бар", "🥣 Соуси", "📦 Упаковка", "🥬 Інше"];
-        let currentCat = "Усі", PRODS = JSON.parse(localStorage.getItem('romasyay_v15_prods')) || [], vals = {}, currentUser = "";
+        let currentCat = "Усі", vals = {}, currentUser = "";
         let settings = JSON.parse(localStorage.getItem('romasyay_settings')) || { sound: true, theme: 'theme-white', isDark: false };
 
         function applyTheme() {
             document.documentElement.className = settings.isDark ? 'dark' : 'light';
             document.body.className = settings.theme;
-            document.getElementById('theme-color-meta').content = settings.isDark ? "#020617" : "#f8fafc";
-            document.getElementById('soundBtn').classList.toggle('bg-blue-500', settings.sound);
-            document.getElementById('soundDot').style.left = settings.sound ? '26px' : '4px';
+            document.getElementById('theme-color-meta').content = settings.isDark ? "#0f172a" : "#f8fafc";
+            document.getElementById('soundBtn').classList.toggle('bg-blue-600', settings.sound);
+            document.getElementById('soundDot').style.left = settings.sound ? '30px' : '4px';
         }
 
         function setTheme(t, d) { settings.theme = t; settings.isDark = d; localStorage.setItem('romasyay_settings', JSON.stringify(settings)); applyTheme(); }
@@ -196,9 +290,7 @@
         function dismissSplash() { document.getElementById('splashScreen').classList.add('splash-hide'); nav('menuScreen'); }
 
         function initCategories() {
-            document.getElementById('categoryTabs').innerHTML = categories.map(c => `
-                <button onclick="setCategory('${c}')" class="px-5 py-2 rounded-full text-xs font-black transition-all ${c===currentCat?'bg-[var(--primary)] text-white shadow-md':'glass opacity-60'}">${c}</button>
-            `).join('');
+            document.getElementById('categoryTabs').innerHTML = categories.map(c => `<button onclick="setCategory('${c}')" class="px-6 py-2.5 rounded-full text-sm font-black transition-all ${c===currentCat?'bg-[var(--primary)] text-white shadow-lg':'glass opacity-50'}">${c}</button>`).join('');
         }
         function setCategory(c) { currentCat = c; initCategories(); render(); }
 
@@ -209,7 +301,7 @@
             if(q) f = f.filter(p => p.n.toLowerCase().includes(q));
 
             document.getElementById('lst').innerHTML = f.sort((a,b)=>a.n.localeCompare(b.n,'uk')).map((p, i) => `
-                <div class="glass rounded-[30px] p-5"><div class="flex justify-between items-start mb-4"><div><span class="text-[10px] font-black uppercase opacity-30 tracking-widest">${p.u}</span><h3 class="text-lg font-black leading-tight">${p.n}</h3></div><div class="text-3xl font-black text-[var(--primary)]">${vals[p.n]||0}</div></div><div class="flex gap-3"><input type="number" id="inp-${i}" placeholder="0" class="w-full rounded-2xl p-4 text-center font-black text-xl bg-white/40 dark:bg-black/20 outline-none"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-8 rounded-2xl text-2xl shadow-lg">✓</button></div></div>`).join('');
+                <div class="glass rounded-[35px] p-6 shadow-sm"><div class="flex justify-between items-start mb-4"><div><span class="text-[10px] font-black uppercase opacity-30 tracking-widest">${p.u}</span><h3 class="text-xl font-black leading-tight">${p.n}</h3></div><div class="text-4xl font-black text-[var(--primary)]">${vals[p.n]||0}</div></div><div class="flex gap-3"><input type="number" id="inp-${i}" placeholder="0" class="w-full rounded-2xl p-5 text-center font-black text-2xl bg-white/50 dark:bg-black/20 outline-none"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-10 rounded-2xl text-3xl shadow-lg ios-card">✓</button></div></div>`).join('');
         }
 
         function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value='';if(settings.sound)playNeutralClick();render();}}
@@ -227,21 +319,21 @@
         function loadArchive() {
             let a = JSON.parse(localStorage.getItem('romasyay_arc')) || [];
             document.getElementById('arcView').innerHTML = a.reverse().map(x => `
-                <div class="glass rounded-[35px] p-6 relative mb-4">
-                    <button onclick="downloadExcel(${x.id})" class="absolute top-4 right-4 w-10 h-10 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center">📗</button>
-                    <div class="mb-4 pr-12"><h4 class="font-black text-xl">${x.user} • ${x.loc}</h4><div class="text-[10px] font-bold opacity-40 uppercase">${x.dt}</div></div>
-                    <div class="space-y-1 pt-3 border-t border-gray-300/20">${x.items.map(i=>`<div class="text-sm flex justify-between font-bold"><span>${i.n}</span><span class="text-[var(--primary)]">${i.v} ${i.u}</span></div>`).join('')}</div>
+                <div class="glass rounded-[40px] p-8 relative mb-6">
+                    <button onclick="downloadExcel(${x.id})" class="absolute top-6 right-6 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg">📗</button>
+                    <div class="mb-4"><h4 class="font-black text-2xl">${x.user}</h4><div class="text-sm font-bold opacity-40 uppercase">${x.loc} • ${x.dt}</div></div>
+                    <div class="space-y-2 pt-4 border-t border-gray-300/20">${x.items.map(i=>`<div class="text-lg flex justify-between font-bold"><span>${i.n}</span><span class="text-[var(--primary)] font-black">${i.v} ${i.u}</span></div>`).join('')}</div>
                 </div>`).join('');
         }
 
-        function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(5); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
+        function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(8); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
         function playPianoSuccess() { try { let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523,659,1046].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
         function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
         function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
         function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('hidden'); if(!c.classList.contains('hidden')) document.getElementById('s').focus(); }
         function downloadExcel(id) { let a=JSON.parse(localStorage.getItem('romasyay_arc')),i=a.find(x=>x.id===id); let d=[["Товар","Кількість","Од."]]; i.items.forEach(x=>d.push([x.n,x.v,x.u])); let s=XLSX.utils.aoa_to_sheet(d),b=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(b,s,"Inventory"); XLSX.writeFile(b,`Inventory_${i.loc}_${i.dt}.xlsx`); }
 
-        window.onload = () => { applyTheme(); initCategories(); };
+        window.onload = () => { applyTheme(); initCategories(); render(); };
     </script>
 </body>
 </html>
