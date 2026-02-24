@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Ромасяй">
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v24</title>
+    <title>Ромасяй Cloud v25</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -28,7 +28,6 @@
         .theme-black-red { --bg-grad-1: #2a0808; --bg-grad-2: #000000; --text-main: #fecaca; --primary: #f87171; }
         .theme-green-black { --bg-grad-1: #064e3b; --bg-grad-2: #020617; --text-main: #a7f3d0; --primary: #34d399; }
 
-        /* ФІКС БІЛОЇ ПОЛОСИ: Фарбуємо самий корінь документа у колір теми */
         html { height: 100%; background-color: var(--bg-grad-2); transition: background-color 0.4s ease; }
         body { 
             min-height: 100%; width: 100%; margin: 0; padding: 0; 
@@ -48,7 +47,6 @@
 
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 150px; }
         
-        /* ВІДСТУПИ ДЛЯ iOS: Гарантовано нижче годинника і чубчика */
         .safe-pt-menu { padding-top: max(85px, env(safe-area-inset-top)); }
         .safe-pt-header { padding-top: max(65px, env(safe-area-inset-top)); padding-bottom: 15px; }
 
@@ -122,7 +120,7 @@
             <div class="glass rounded-[35px] p-5 flex justify-between items-center shadow-sm">
                 <div class="pl-2">
                     <span class="text-[10px] font-black opacity-30 uppercase tracking-widest block mb-1">Локація</span>
-                    <select id="l" class="bg-transparent font-black outline-none text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
+                    <select id="l" onchange="saveSession()" class="bg-transparent font-black outline-none text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
                 </div>
                 <div class="flex gap-3">
                     <button onclick="sendToTelegram()" class="glass w-14 h-14 flex items-center justify-center rounded-2xl text-2xl ios-card shadow-sm">✈️</button>
@@ -178,7 +176,7 @@
                 <p class="font-bold opacity-80 leading-relaxed mb-4">Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.</p>
                 <p class="font-bold opacity-80 leading-relaxed">Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
             </div>
-            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v24</p>
+            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v25</p>
         </main>
     </div>
 
@@ -199,20 +197,27 @@
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
         const defaultRawItems=["7АП","7АП 1Л.","Авокадо","Айсберг","Ананас для Піци","Банан","Бренді Арді","Бульйон Курячий","Васабі","Васабі Ромасяй 7.5гр.","Вершки для Піци","Вино Decordi Ламбруско Напівсухе Біле (0.750л)","Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)","Вино Decordi Ламбруско Напівсухе Червоне (0.750л)","Вино Decordi Ламбруско Сухе Секо Біле (0.750л)","Вино Decordi Напівсолодке Біле (50мл.)","Вино Decordi Напівсолодке Червоне (50мл.)","Вино Decordi Сухе Червоне (50мл.)","Вино Ігристе Апостроф Брют (50мл.)","Вино ігристе Decordi Просекко (0.750л)","Вино Просекко розлив","Вино Чоя Ориджинал (50мл)","Вишня морожена","Віскі Бушмілс (50мл.)","Віскі Ват 69 (50мл.)","Віскі Гленморанж (50мл)","Віскі Джек Деніелс (50мл.)","Віскі Джек Деніелс Хані (50мл.)","Віскі Джек Деніелс Яблуко (50мл.)","Віскі Погіс (50мл.)","Віскі Ханкі Баністер (50мл.)","Вода","Вода \"Трускавецька\" (0,5л пластик)","Вода Міринда","Вода трускавецька 0,5 скл","Вода Трускавецькі 0,3 скл","Вугор","Горілка Кий","Горілка Фін (50мл.)","Горілка Фінляндія","Горілка Фінські (50мл)","Горіховий соус","Гребінець","Гриби Шиїтакі","Грудинка марочна для Піці","Десерт Моті","Джек Деніелс Яблуко","Джин Фінсбарі (50мл)","Дріжджі","Есколар масляний","Зелена цибуля","Золото","Ікра массаго Червона","Ікра тобіко","Імбір","Імбір Ромасяй 30гр.","Інарі","Кабаноссі для Піці","Кава Джемені","Каперси для Піці","Капуста Броколі","Кокосова Стружка","Коньяк Агмарті 3 роки (50мл.)","Коньяк Агмарті 5 років (50мл.)","Коньяк Хеннесі VS (50мл)","Коробка для Піці","Крамбл","Крафт-пакет","Крафтова палічка","Креветка 16/20","Крем сир для Піці","Кукурудза для Піці","Кукурудза консервована","Кунжут білий","Кунжут чорний","Куряче філе","Лайм","Лимон","Лікер Апероль (50мл.)","Лікер Бейліс (50мл.)","Лікер Єгермейстер (50мл.)","Лікер Пізан","Лікер Самбука Саутіні","Лікер Трипл Сек","Лосось копчений","Лосось філе","Майонез Провансаль","Майонез Японський","Маменорі","Манго Королівське","Манго для Піци","Мікрогрін","Мірин","Місопаста","Молоко","Морква","Морозиво в асортименті","Мука Темпура","Мука для піци","М'ята","Нитки чилі для Піці","Норі","Обліпиха морожена","Огірок","Огірок маринований для Піці","Оливки для Піци","Олія","Олія для Фритюра","Олія для піци","Омлет","Орео","Оцет рисовий","Палички","Пан Тостовий","Пармезан для Піці","Перепеліне яйце для Піці","Перець болгарський","Перець болгарський для Піці","Перець гострий","Пергамент для Піці","Пепсі","Печериці для Піці","Пиво hoegaarden (300 мл.)","Пиво stella artois (500 мл.)","Пиво stella artois Б.А (500 мл.)","Пиво Будвайзер 0.5л","Пиво Будвайзер 0.5л БА","Пиво Гамбрінус 0.5л","Пиво Клаустхаллер БА (0,5л)","Пиво Микулинецьке 0.5л","Пиво Микулинецьке 0,5 БА","Порей Цибуля","Рамен Макарон","Рисовий папір","Рис Хакумай, США","Ром Ботафого (50мл.)","Ром Капітан Морган Gold (50мл.)","Ром Капітан Морган Білий (50мл.)","Ром Карибії","Рукола","Салат айсберг для Піці","Салат чука","Салямі Італійська Для Піці","Салямі Оригінальна для Піці","Сир Дорблю для Піці","Сир Камамбер","Сир Маскарпоне","Сир Моцарела тверда","Сир Тофу","Сир Хохланд","Сирні Кульки філадельфія","Сіль","Сіроп Гренадін","Сніжний краб","Сок в асортименті","Соус Кислосолодкий","Соус Кім Чі","Соус Кунжутний Бургер","Соус Рамен","Соус Сирний для Піці","Соус Соєвий Ромасяй 50гр.","Соус Унагі","Соус Шрірача","Соус для Піци","Соус кіккоман","Соус порційний для піци","Соус сирий","Соус соєвий","Соус спайсі","Соус цезар для піци","Стружка тунця","Сусник великий","Сухарі Панко","Сухарики для Піці","Сяке Чоя (50м.)","Текіла Сієрра Сільвер (50мл.)","Тонік Евервесс","Тримачі навчальні","Тунець","Удон","Упаковка 1рол. Верх","Упаковка 1рол. Низ","Упаковка Бургер: Верх","Упаковка Бургер: Низ","Упаковка картону: Верх:","Упаковка картону: Низ:","Філе бедра для Піці","Фісташка для Піці","Фунчоза","Хамон","Холодний чай","Хундаші","Цибуля","Цибуля зелена","Цибуля червона для Піці","Цукор","Цукор в стіках","Чай в асортименті","Часник","Чорнила Каракатиці","Чіпси рисові","Шинка з Білого Мяса для Піці","Шинка традиційна для піци","Яблука","Яйце"];
-        function getCat(n) { let l=n.toLowerCase(); if(l.includes('піц')||l.includes('сир')||l.includes('шинк')) return '🍕 Піца'; if(l.includes('вино')||l.includes('пиво')||l.includes('сік')||l.includes('вода')||l.includes('віскі')) return '🍹 Бар'; if(l.includes('упаков')||l.includes('коробк')||l.includes('паличк')) return '📦 Упаковка'; if(l.includes('соус')||l.includes('васабі')||l.includes('імбір')) return '🥣 Соуси'; if(l.includes('лосось')||l.includes('вугор')||l.includes('рис')) return '🍣 Суші'; return '🥬 Інше'; }
+        function getCat(n) { let l=n.toLowerCase(); if(l.includes('піц')||l.includes('сир')||l.includes('шинк')) return '🍕 Піца'; if(l.includes('вино')||l.includes('пиво')||l.includes('сік')||l.includes('вода')||l.includes('віскі')||l.includes('лікер')||l.includes('ром')||l.includes('тонік')||l.includes('чай')) return '🍹 Бар'; if(l.includes('упаков')||l.includes('коробк')||l.includes('паличк')||l.includes('пакет')) return '📦 Упаковка'; if(l.includes('соус')||l.includes('васабі')||l.includes('імбір')||l.includes('олія')) return '🥣 Соуси'; if(l.includes('лосось')||l.includes('вугор')||l.includes('рис')||l.includes('норі')) return '🍣 Суші'; return '🥬 Інше'; }
 
-        // ЗАВАНТАЖЕННЯ ПРОДУКТІВ (Оновив ключ для чистих даних)
-        let PRODS = JSON.parse(localStorage.getItem('romasyay_v24_prods'));
+        let PRODS = JSON.parse(localStorage.getItem('romasyay_v25_prods'));
         if(!PRODS || PRODS.length < 50) { 
             PRODS = defaultRawItems.map(n => ({ n, u: (n.includes('мл')||n.includes('л'))?'мл':'кг', c: getCat(n) })); 
-            localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS));
+            localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS));
         }
 
         db.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_arc', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
 
         const categories = ["Усі", "🍣 Суші", "🍕 Піца", "🍹 Бар", "🥣 Соуси", "📦 Упаковка", "🥬 Інше"];
-        let currentCat = "Усі", vals = {}, currentUser = "";
+        let currentCat = "Усі", currentUser = "";
+        
+        // ВІДНОВЛЕННЯ СЕСІЇ З ПАМ'ЯТІ
+        let vals = JSON.parse(localStorage.getItem('romasyay_current_session')) || {};
         let settings = JSON.parse(localStorage.getItem('romasyay_settings')) || { sound: true, theme: 'theme-white', isDark: false };
+
+        function saveSession() {
+            localStorage.setItem('romasyay_current_session', JSON.stringify(vals));
+            localStorage.setItem('romasyay_current_loc', document.getElementById('l').value);
+        }
 
         function applyTheme() {
             document.documentElement.className = settings.isDark ? 'dark' : 'light';
@@ -229,14 +234,13 @@
         function dismissSplash() { document.getElementById('splashScreen').classList.add('splash-hide'); nav('menuScreen'); }
 
         function initCategories() {
-            document.getElementById('categoryTabs').innerHTML = categories.map(c => `<button onclick="setCategory('${c}')" class="px-6 py-2.5 rounded-full text-sm font-black transition-all ${c===currentCat?'bg-[var(--primary)] text-white shadow-lg':'glass opacity-50'}">${c}</button>`).join('');
+            document.getElementById('categoryTabs').innerHTML = categories.map(c => `<button onclick="setCategory('${c}')" class="px-6 py-2.5 rounded-full text-sm font-black transition-all ios-card ${c===currentCat?'bg-[var(--primary)] text-white shadow-lg':'glass opacity-50'}">${c}</button>`).join('');
         }
         function setCategory(c) { currentCat = c; initCategories(); render(); }
         
-        // ФУНКЦІЇ ДОДАВАННЯ ТА ВИДАЛЕННЯ З СПИСКУ
-        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS)); } }
-        function rst(n) { if(confirm('Обнулити '+n+'?')) { vals[n]=0; render(); if(settings.sound) playNeutralClick(); } }
-        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS)); delete vals[n]; render(); if(settings.sound) playNeutralClick(); } }
+        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS)); } }
+        function rst(n) { if(confirm('Обнулити '+n+'?')) { vals[n]=0; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
+        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS)); delete vals[n]; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
         function clearSearch() { document.getElementById('s').value = ''; render(); if(settings.sound) playNeutralClick(); }
 
         function render() {
@@ -270,19 +274,52 @@
                 </div>`).join('');
         }
 
-        function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value='';if(settings.sound)playNeutralClick();render();}}
+        function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value=''; saveSession(); if(settings.sound)playNeutralClick();render();}}
         function startInventoryFlow() { if(currentUser) nav('inventoryScreen'); else nav('specialistScreen'); }
-        function setUserAndStart(n) { currentUser = n; document.getElementById('displayUserMenu').innerText = n; document.getElementById('displayUser').innerText = n; document.getElementById('userBadgeContainer').classList.remove('hidden'); nav('inventoryScreen'); render(); }
+        function setUserAndStart(n) { 
+            currentUser = n; 
+            document.getElementById('displayUserMenu').innerText = n; 
+            document.getElementById('displayUser').innerText = n; 
+            document.getElementById('userBadgeContainer').classList.remove('hidden'); 
+            nav('inventoryScreen'); 
+            render(); 
+        }
         function logout() { currentUser = ""; document.getElementById('userBadgeContainer').classList.add('hidden'); nav('menuScreen'); }
         
+        // ПОВЕРНУТО МИТТЄВЕ ЗБЕРЕЖЕННЯ (Оптимістичне)
         function saveData() {
             const items = PRODS.map(p => vals[p.n] > 0 ? {n:p.n, v:vals[p.n], u:p.u} : null).filter(x=>x);
-            if(!items.length) return alert("Порожньо!");
+            if(!items.length) return alert("Порожньо! Введіть хоча б один товар.");
+            
             const r = {id:Date.now(), user:currentUser, loc:document.getElementById('l').value, dt:new Date().toLocaleString('uk-UA'), items};
-            db.ref('inventories/'+r.id).set(r).then(() => { vals = {}; playPianoSuccess(); render(); alert("✅ Збережено!"); });
+            
+            // Локальне збереження для миттєвого відображення в архіві
+            let a = JSON.parse(localStorage.getItem('romasyay_arc')) || [];
+            a.push(r);
+            localStorage.setItem('romasyay_arc', JSON.stringify(a));
+            
+            // Відправка в Firebase
+            db.ref('inventories/'+r.id).set(r).catch(e => console.error(e));
+            
+            vals = {};
+            saveSession();
+            playPianoSuccess();
+            render();
+            setTimeout(() => alert("✅ Збережено в хмару!"), 300);
         }
 
-        // АРХІВ З КНОПКАМИ РЕДАГУВАННЯ
+        // ПОВЕРНУТО ВІДПРАВКУ В ТЕЛЕГРАМ (Літачок)
+        function sendToTelegram() {
+            const items = PRODS.map(p => vals[p.n] > 0 ? `${p.n}: ${vals[p.n]} ${p.u}` : null).filter(x=>x);
+            if(!items.length) return alert("Немає даних для відправки!");
+            const t = `📊 ІНВЕНТУРА\n👤: ${currentUser}\n📍: ${document.getElementById('l').value}\n📅: ${new Date().toLocaleString('uk-UA')}\n\n${items.join('\n')}`;
+            if(navigator.share) {
+                navigator.share({title: 'Інвентаризація', text: t}).catch(e=>console.log(e));
+            } else {
+                window.location.href = `https://t.me/share/url?url=&text=${encodeURIComponent(t)}`;
+            }
+        }
+
         function loadArchive() {
             let a = JSON.parse(localStorage.getItem('romasyay_arc')) || [];
             document.getElementById('arcView').innerHTML = a.reverse().map(x => `
@@ -297,7 +334,7 @@
                 </div>`).join('');
         }
 
-        function editArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; let idx = a.findIndex(x=>x.id===id); if(idx>-1) { let i = a[idx]; vals = {}; i.items.forEach(x=>vals[x.n]=x.v); document.getElementById('l').value = i.loc; a.splice(idx,1); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove(); nav('inventoryScreen'); render(); alert("✅ Завантажено для редагування."); } }
+        function editArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; let idx = a.findIndex(x=>x.id===id); if(idx>-1) { let i = a[idx]; vals = {}; i.items.forEach(x=>vals[x.n]=x.v); document.getElementById('l').value = i.loc; a.splice(idx,1); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove(); saveSession(); nav('inventoryScreen'); render(); alert("✅ Завантажено для редагування."); } }
         function deleteCloudArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); if(!confirm("Видалити назавжди?")) return; let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; a = a.filter(x=>x.id!==id); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove().then(()=>{ loadArchive(); if(settings.sound) playNeutralClick(); }); }
 
         function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(8); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
@@ -306,14 +343,14 @@
         function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
         function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
         
-        // ПОВЕРНУТО ЗБЕРЕЖЕННЯ І ЗАКРИТТЯ
+        // ТЕПЕР ЗБЕРЕЖЕННЯ ОДРАЗУ ЗАКРИВАЄ ВІКНО
         function saveNewItem() { 
             const n = document.getElementById('newItemName').value.trim();
             const u = document.getElementById('newItemUnit').value;
             if(!n) return alert("Введіть назву!");
             if(PRODS.some(p => p.n.toLowerCase() === n.toLowerCase())) return alert("Вже є в базі!");
             PRODS.push({n, u, c: getCat(n)});
-            localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS));
+            localStorage.setItem('romasyay_v25_prods', JSON.stringify(PRODS));
             closeAddModal();
             document.getElementById('newItemName').value = '';
             render();
@@ -323,7 +360,13 @@
         function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('hidden'); if(!c.classList.contains('hidden')) document.getElementById('s').focus(); }
         function downloadExcel(id) { let a=JSON.parse(localStorage.getItem('romasyay_arc')),i=a.find(x=>x.id===id); let d=[["Товар","Кількість","Од."]]; i.items.forEach(x=>d.push([x.n,x.v,x.u])); let s=XLSX.utils.aoa_to_sheet(d),b=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(b,s,"Inventory"); XLSX.writeFile(b,`Inventory_${i.loc}_${i.dt}.xlsx`); }
 
-        window.onload = () => { applyTheme(); initCategories(); render(); };
+        window.onload = () => { 
+            applyTheme(); 
+            initCategories(); 
+            render(); 
+            let savedLoc = localStorage.getItem('romasyay_current_loc');
+            if(savedLoc) document.getElementById('l').value = savedLoc;
+        };
     </script>
 </body>
 </html>
