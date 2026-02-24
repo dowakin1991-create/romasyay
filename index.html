@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Ромасяй">
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v23</title>
+    <title>Ромасяй Cloud v24</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -28,10 +28,15 @@
         .theme-black-red { --bg-grad-1: #2a0808; --bg-grad-2: #000000; --text-main: #fecaca; --primary: #f87171; }
         .theme-green-black { --bg-grad-1: #064e3b; --bg-grad-2: #020617; --text-main: #a7f3d0; --primary: #34d399; }
 
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; color: var(--text-main); user-select: none; -webkit-user-select: none; }
-        
-        /* ФОН НЕРУХОМИЙ - лікує білу смугу */
-        .fixed-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%); z-index: -1; }
+        /* ФІКС БІЛОЇ ПОЛОСИ: Фарбуємо самий корінь документа у колір теми */
+        html { height: 100%; background-color: var(--bg-grad-2); transition: background-color 0.4s ease; }
+        body { 
+            min-height: 100%; width: 100%; margin: 0; padding: 0; 
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%) no-repeat fixed; 
+            font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; 
+            color: var(--text-main); position: fixed; overflow: hidden;
+            user-select: none; -webkit-user-select: none; overscroll-behavior: none;
+        }
 
         .glass { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
         .ios-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s; cursor: pointer; }
@@ -43,20 +48,20 @@
 
         .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 150px; }
         
-        /* ЖОРСТКІ ВІДСТУПИ ДЛЯ АЙФОНА (Захист від годинника) */
-        .safe-pt-menu { padding-top: max(80px, env(safe-area-inset-top)); }
+        /* ВІДСТУПИ ДЛЯ iOS: Гарантовано нижче годинника і чубчика */
+        .safe-pt-menu { padding-top: max(85px, env(safe-area-inset-top)); }
         .safe-pt-header { padding-top: max(65px, env(safe-area-inset-top)); padding-bottom: 15px; }
 
         .icon-btn { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
         .icon-btn svg { width: 28px; height: 28px; stroke-width: 3px; }
         .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .unit-select { appearance: none; -webkit-appearance: none; background: rgba(0, 122, 255, 0.1); padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 13px; color: var(--primary); cursor: pointer; }
+        .dark .unit-select { background: rgba(255, 255, 255, 0.1); }
         
         #splashScreen.splash-hide { opacity: 0; pointer-events: none; transition: 0.5s; }
     </style>
 </head>
 <body class="theme-white">
-    <div class="fixed-bg"></div>
-
     <div id="splashScreen" onclick="dismissSplash()" class="fixed inset-0 bg-black/10 backdrop-blur-2xl flex flex-col items-center justify-center z-[9999]">
         <img src="https://iili.io/qKRx5xI.png" class="w-44 h-44 object-contain rounded-[40px] shadow-2xl animate-pulse">
         <div class="mt-10 px-8 py-4 glass rounded-full font-black text-sm animate-bounce tracking-widest">👆 ТОРКНІТЬСЯ</div>
@@ -70,7 +75,7 @@
                     <button onclick="logout()" class="text-[10px] font-bold opacity-40 uppercase ml-3">Вийти</button>
                 </div>
                 <div class="flex-1"></div>
-                <button onclick="nav('settingsScreen')" class="glass w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm">🎨</button>
+                <button onclick="nav('settingsScreen')" class="glass w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm ios-card">🎨</button>
             </div>
             <div class="text-center mb-12">
                 <h1 class="text-6xl font-black tracking-tight">Ромасяй</h1>
@@ -89,7 +94,7 @@
     </div>
 
     <div id="specialistScreen" class="app-screen">
-        <header class="glass rounded-b-[40px] shadow-sm flex items-center px-4 safe-pt-header shrink-0"><button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button></header>
+        <header class="glass rounded-b-[40px] shadow-sm flex items-center px-4 safe-pt-header shrink-0"><button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button></header>
         <div class="flex-1 flex flex-col justify-center items-center px-10 gap-6">
             <h2 class="text-4xl font-black mb-6 text-center">Хто працює?</h2>
             <button onclick="setUserAndStart('Антон 🚀')" class="w-full py-7 rounded-[35px] font-black text-2xl glass ios-card shadow-md text-blue-600">Антон 🚀</button>
@@ -100,14 +105,17 @@
     <div id="inventoryScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm safe-pt-header shrink-0 z-50">
             <div class="flex justify-between items-center px-5">
-                <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+                <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
                 <span id="displayUser" class="text-xs font-black bg-[var(--primary)] text-white px-4 py-2 rounded-full uppercase shadow-md"></span>
                 <div class="flex gap-2">
-                    <button onclick="toggleSearch()" class="icon-btn"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button>
-                    <button onclick="openAddModal()" class="w-12 h-12 bg-emerald-500 text-white rounded-full text-3xl font-light shadow-lg">+</button>
+                    <button onclick="toggleSearch()" class="icon-btn ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button>
+                    <button onclick="openAddModal()" class="w-12 h-12 bg-emerald-500 text-white rounded-full text-3xl font-light shadow-lg ios-card">+</button>
                 </div>
             </div>
-            <div id="searchBarContainer" class="px-6 hidden"><input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/50 dark:bg-black/20 rounded-2xl p-4 outline-none font-bold mt-4 shadow-inner" onkeyup="render()"></div>
+            <div id="searchBarContainer" class="px-6 hidden relative w-full">
+                <input type="text" id="s" placeholder="Пошук..." class="w-full bg-white/50 dark:bg-black/20 rounded-2xl p-4 pr-12 outline-none font-bold mt-4 shadow-inner" onkeyup="render()">
+                <button onclick="clearSearch()" class="absolute right-9 top-[2.2rem] opacity-40 text-lg w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center font-black ios-card">✕</button>
+            </div>
             <div class="w-full overflow-x-auto flex gap-3 px-6 mt-5 hide-scrollbar" id="categoryTabs"></div>
         </header>
         <main class="scroll-area px-5 pt-6 space-y-5">
@@ -117,7 +125,7 @@
                     <select id="l" class="bg-transparent font-black outline-none text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="sendToTelegram()" class="glass w-14 h-14 flex items-center justify-center rounded-2xl text-2xl ios-card">✈️</button>
+                    <button onclick="sendToTelegram()" class="glass w-14 h-14 flex items-center justify-center rounded-2xl text-2xl ios-card shadow-sm">✈️</button>
                     <button onclick="saveData()" class="bg-[var(--primary)] text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-lg ios-card">💾</button>
                 </div>
             </div>
@@ -127,13 +135,13 @@
 
     <div id="settingsScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
-            <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+            <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
             <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Налаштування</span>
         </header>
         <main class="scroll-area px-6 pt-10 space-y-8">
             <div class="glass p-6 rounded-[35px] flex justify-between items-center shadow-sm">
-                <div><h3 class="font-black text-lg">Звук</h3><p class="text-xs opacity-40">Мелодії та кліки</p></div>
-                <button onclick="toggleSetting('sound')" id="soundBtn" class="w-14 h-8 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-all"><div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm" id="soundDot"></div></button>
+                <div><h3 class="font-black text-lg">Звукові ефекти</h3><p class="text-xs opacity-40">Мелодії та кліки</p></div>
+                <button onclick="toggleSetting('sound')" id="soundBtn" class="w-14 h-8 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-all shadow-inner"><div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm" id="soundDot"></div></button>
             </div>
             <div class="glass p-7 rounded-[40px] shadow-sm">
                 <h3 class="font-black text-lg mb-6 text-center">Теми оформлення</h3>
@@ -152,7 +160,7 @@
 
     <div id="archiveScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
-            <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+            <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
             <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Архів</span>
         </header>
         <div id="arcView" class="scroll-area px-5 pt-8 space-y-5"></div>
@@ -160,24 +168,25 @@
 
     <div id="aboutScreen" class="app-screen">
         <header class="glass rounded-b-[45px] shadow-sm z-50 flex items-center px-4 safe-pt-header shrink-0">
-            <button onclick="nav('menuScreen')" class="icon-btn -ml-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
+            <button onclick="nav('menuScreen')" class="icon-btn -ml-2 ios-card"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7"/></svg></button>
             <span class="font-black text-xl tracking-widest uppercase flex-1 text-center pr-10">Про додаток</span>
         </header>
         <main class="scroll-area px-8 pt-12 text-center space-y-8">
             <img src="https://iili.io/qKRx5xI.png" class="w-40 h-40 mx-auto rounded-[40px] shadow-2xl">
             <h2 class="text-4xl font-black text-[var(--primary)]">Ромасяй Cloud</h2>
-            <div class="glass p-8 rounded-[40px] shadow-sm">
-                <p class="font-bold opacity-80 leading-relaxed">Система хмарної інвентаризації. Створена для швидкого та зручного обліку товарів на базі Firebase.</p>
+            <div class="glass p-8 rounded-[40px] shadow-sm text-left">
+                <p class="font-bold opacity-80 leading-relaxed mb-4">Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.</p>
+                <p class="font-bold opacity-80 leading-relaxed">Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
             </div>
-            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">v1.0 Masterpiece v23 © 2026</p>
+            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v24</p>
         </main>
     </div>
 
     <div id="addModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-8 backdrop-blur-xl z-[10000]">
         <div class="w-full glass p-10 rounded-[45px] space-y-8 shadow-2xl">
             <h2 class="text-3xl font-black text-center text-emerald-500">Новий товар</h2>
-            <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center">
-            <select id="newItemUnit" class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center"><option>кг</option><option>шт</option><option>л</option><option>мл</option></select>
+            <input type="text" id="newItemName" placeholder="Назва..." class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center shadow-inner">
+            <select id="newItemUnit" class="w-full p-5 glass rounded-2xl outline-none font-black text-2xl text-center shadow-inner"><option value="кг">кг</option><option value="шт">шт</option><option value="л">л</option><option value="мл">мл</option></select>
             <div class="flex gap-4">
                 <button onclick="closeAddModal()" class="flex-1 py-5 glass rounded-3xl font-black opacity-50 ios-card">Відміна</button>
                 <button onclick="saveNewItem()" class="flex-1 py-5 bg-emerald-500 text-white rounded-3xl font-black shadow-lg ios-card">Додати</button>
@@ -189,84 +198,14 @@
         const firebaseConfig = { apiKey: "AIzaSyAfSPpB0l2whC6A9q596fFU-VwYTluN1vY", authDomain: "romasyay-cloud.firebaseapp.com", databaseURL: "https://romasyay-cloud-default-rtdb.europe-west1.firebasedatabase.app", projectId: "romasyay-cloud", storageBucket: "romasyay-cloud.firebasestorage.app", messagingSenderId: "515733482243", appId: "1:515733482243:web:26e286e071fd3621859736" };
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-        // ТВЕРДІ ДАНІ - Товари, які більше ніколи не зникнуть
-        const initialProducts = [
-            {n: "7АП", u: "мл", c: "🍹 Бар"}, {n: "7АП 1Л.", u: "мл", c: "🍹 Бар"}, {n: "Авокадо", u: "кг", c: "🥬 Інше"}, 
-            {n: "Айсберг", u: "кг", c: "🥬 Інше"}, {n: "Ананас для Піци", u: "кг", c: "🍕 Піца"}, {n: "Банан", u: "кг", c: "🥬 Інше"}, 
-            {n: "Бренді Арді", u: "мл", c: "🍹 Бар"}, {n: "Бульйон Курячий", u: "л", c: "🥬 Інше"}, {n: "Васабі", u: "кг", c: "🥣 Соуси"}, 
-            {n: "Васабі Ромасяй 7.5гр.", u: "шт", c: "🥣 Соуси"}, {n: "Вершки для Піци", u: "л", c: "🍕 Піца"}, {n: "Вино Decordi Ламбруско Напівсухе Біле (0.750л)", u: "шт", c: "🍹 Бар"}, 
-            {n: "Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)", u: "шт", c: "🍹 Бар"}, {n: "Вино Decordi Ламбруско Напівсухе Червоне (0.750л)", u: "шт", c: "🍹 Бар"}, 
-            {n: "Вино Decordi Ламбруско Сухе Секо Біле (0.750л)", u: "шт", c: "🍹 Бар"}, {n: "Вино Decordi Напівсолодке Біле (50мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Вино Decordi Напівсолодке Червоне (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Вино Decordi Сухе Червоне (50мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Вино Ігристе Апостроф Брют (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Вино ігристе Decordi Просекко (0.750л)", u: "шт", c: "🍹 Бар"}, 
-            {n: "Вино Просекко розлив", u: "мл", c: "🍹 Бар"}, {n: "Вино Чоя Ориджинал (50мл)", u: "мл", c: "🍹 Бар"}, {n: "Вишня морожена", u: "кг", c: "🥬 Інше"}, 
-            {n: "Віскі Бушмілс (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Ват 69 (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Гленморанж (50мл)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Віскі Джек Деніелс (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Джек Деніелс Хані (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Джек Деніелс Яблуко (50мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Віскі Погіс (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Віскі Ханкі Баністер (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Вода", u: "л", c: "🍹 Бар"}, 
-            {n: "Вода \"Трускавецька\" (0,5л пластик)", u: "шт", c: "🍹 Бар"}, {n: "Вода Міринда", u: "мл", c: "🍹 Бар"}, {n: "Вода трускавецька 0,5 скл", u: "шт", c: "🍹 Бар"}, 
-            {n: "Вода Трускавецькі 0,3 скл", u: "шт", c: "🍹 Бар"}, {n: "Вугор", u: "кг", c: "🍣 Суші"}, {n: "Горілка Кий", u: "мл", c: "🍹 Бар"}, 
-            {n: "Горілка Фін (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Горілка Фінляндія", u: "мл", c: "🍹 Бар"}, {n: "Горілка Фінські (50мл)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Горіховий соус", u: "мл", c: "🥣 Соуси"}, {n: "Гребінець", u: "кг", c: "🍣 Суші"}, {n: "Гриби Шиїтакі", u: "кг", c: "🥬 Інше"}, 
-            {n: "Грудинка марочна для Піці", u: "кг", c: "🍕 Піца"}, {n: "Десерт Моті", u: "шт", c: "🥬 Інше"}, {n: "Джек Деніелс Яблуко", u: "мл", c: "🍹 Бар"}, 
-            {n: "Джин Фінсбарі (50мл)", u: "мл", c: "🍹 Бар"}, {n: "Дріжджі", u: "кг", c: "🥬 Інше"}, {n: "Есколар масляний", u: "кг", c: "🥬 Інше"}, 
-            {n: "Зелена цибуля", u: "кг", c: "🥬 Інше"}, {n: "Золото", u: "шт", c: "🥬 Інше"}, {n: "Ікра массаго Червона", u: "кг", c: "🍣 Суші"}, 
-            {n: "Ікра тобіко", u: "кг", c: "🍣 Суші"}, {n: "Імбір", u: "кг", c: "🥣 Соуси"}, {n: "Імбір Ромасяй 30гр.", u: "шт", c: "🥣 Соуси"}, 
-            {n: "Інарі", u: "шт", c: "🍣 Суші"}, {n: "Кабаноссі для Піці", u: "кг", c: "🍕 Піца"}, {n: "Кава Джемені", u: "кг", c: "🍹 Бар"}, 
-            {n: "Каперси для Піці", u: "кг", c: "🍕 Піца"}, {n: "Капуста Броколі", u: "кг", c: "🥬 Інше"}, {n: "Кокосова Стружка", u: "кг", c: "🥬 Інше"}, 
-            {n: "Коньяк Агмарті 3 роки (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Коньяк Агмарті 5 років (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Коньяк Хеннесі VS (50мл)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Коробка для Піці", u: "шт", c: "📦 Упаковка"}, {n: "Крамбл", u: "кг", c: "🥬 Інше"}, {n: "Крафт-пакет", u: "шт", c: "📦 Упаковка"}, 
-            {n: "Крафтова палічка", u: "шт", c: "📦 Упаковка"}, {n: "Креветка 16/20", u: "кг", c: "🍣 Суші"}, {n: "Крем сир для Піці", u: "кг", c: "🍕 Піца"}, 
-            {n: "Кукурудза для Піці", u: "кг", c: "🍕 Піца"}, {n: "Кукурудза консервована", u: "кг", c: "🥬 Інше"}, {n: "Кунжут білий", u: "кг", c: "🍣 Суші"}, 
-            {n: "Кунжут чорний", u: "кг", c: "🍣 Суші"}, {n: "Куряче філе", u: "кг", c: "🥬 Інше"}, {n: "Лайм", u: "кг", c: "🥬 Інше"}, 
-            {n: "Лимон", u: "кг", c: "🥬 Інше"}, {n: "Лікер Апероль (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Лікер Бейліс (50мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Лікер Єгермейстер (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Лікер Пізан", u: "мл", c: "🍹 Бар"}, {n: "Лікер Самбука Саутіні", u: "мл", c: "🍹 Бар"}, 
-            {n: "Лікер Трипл Сек", u: "мл", c: "🍹 Бар"}, {n: "Лосось копчений", u: "кг", c: "🍣 Суші"}, {n: "Лосось філе", u: "кг", c: "🍣 Суші"}, 
-            {n: "Майонез Провансаль", u: "л", c: "🥣 Соуси"}, {n: "Майонез Японський", u: "л", c: "🥣 Соуси"}, {n: "Маменорі", u: "шт", c: "🍣 Суші"}, 
-            {n: "Манго Королівське", u: "кг", c: "🥬 Інше"}, {n: "Манго для Піци", u: "кг", c: "🍕 Піца"}, {n: "Мікрогрін", u: "шт", c: "🥬 Інше"}, 
-            {n: "Мірин", u: "л", c: "🥣 Соуси"}, {n: "Місопаста", u: "кг", c: "🥣 Соуси"}, {n: "Молоко", u: "л", c: "🥬 Інше"}, 
-            {n: "Морква", u: "кг", c: "🥬 Інше"}, {n: "Морозиво в асортименті", u: "кг", c: "🥬 Інше"}, {n: "Мука Темпура", u: "кг", c: "🥬 Інше"}, 
-            {n: "Мука для піци", u: "кг", c: "🍕 Піца"}, {n: "М'ята", u: "кг", c: "🥬 Інше"}, {n: "Нитки чилі для Піці", u: "кг", c: "🍕 Піца"}, 
-            {n: "Норі", u: "шт", c: "🍣 Суші"}, {n: "Обліпиха морожена", u: "кг", c: "🥬 Інше"}, {n: "Огірок", u: "кг", c: "🥬 Інше"}, 
-            {n: "Огірок маринований для Піці", u: "кг", c: "🍕 Піца"}, {n: "Оливки для Піци", u: "кг", c: "🍕 Піца"}, {n: "Олія", u: "л", c: "🥣 Соуси"}, 
-            {n: "Олія для Фритюра", u: "л", c: "🥣 Соуси"}, {n: "Олія для піци", u: "л", c: "🍕 Піца"}, {n: "Омлет", u: "кг", c: "🥬 Інше"}, 
-            {n: "Орео", u: "кг", c: "🍕 Піца"}, {n: "Оцет рисовий", u: "л", c: "🥣 Соуси"}, {n: "Палички", u: "шт", c: "📦 Упаковка"}, 
-            {n: "Пан Тостовий", u: "шт", c: "🥬 Інше"}, {n: "Пармезан для Піці", u: "кг", c: "🍕 Піца"}, {n: "Перепеліне яйце для Піці", u: "шт", c: "🍕 Піца"}, 
-            {n: "Перець болгарський", u: "кг", c: "🥬 Інше"}, {n: "Перець болгарський для Піці", u: "кг", c: "🍕 Піца"}, {n: "Перець гострий", u: "кг", c: "🥬 Інше"}, 
-            {n: "Пергамент для Піці", u: "шт", c: "📦 Упаковка"}, {n: "Пепсі", u: "мл", c: "🍹 Бар"}, {n: "Печериці для Піці", u: "кг", c: "🍕 Піца"}, 
-            {n: "Пиво hoegaarden (300 мл.)", u: "мл", c: "🍹 Бар"}, {n: "Пиво stella artois (500 мл.)", u: "мл", c: "🍹 Бар"}, {n: "Пиво stella artois Б.А (500 мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Пиво Будвайзер 0.5л", u: "шт", c: "🍹 Бар"}, {n: "Пиво Будвайзер 0.5л БА", u: "шт", c: "🍹 Бар"}, {n: "Пиво Гамбрінус 0.5л", u: "шт", c: "🍹 Бар"}, 
-            {n: "Пиво Клаустхаллер БА (0,5л)", u: "шт", c: "🍹 Бар"}, {n: "Пиво Микулинецьке 0.5л", u: "шт", c: "🍹 Бар"}, {n: "Пиво Микулинецьке 0,5 БА", u: "шт", c: "🍹 Бар"}, 
-            {n: "Порей Цибуля", u: "кг", c: "🥬 Інше"}, {n: "Рамен Макарон", u: "кг", c: "🥬 Інше"}, {n: "Рисовий папір", u: "шт", c: "🍣 Суші"}, 
-            {n: "Рис Хакумай, США", u: "кг", c: "🍣 Суші"}, {n: "Ром Ботафого (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Ром Капітан Морган Gold (50мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Ром Капітан Морган Білий (50мл.)", u: "мл", c: "🍹 Бар"}, {n: "Ром Карибії", u: "мл", c: "🍹 Бар"}, {n: "Рукола", u: "кг", c: "🍕 Піца"}, 
-            {n: "Салат айсберг для Піці", u: "кг", c: "🍕 Піца"}, {n: "Салат чука", u: "кг", c: "🍣 Суші"}, {n: "Салямі Італійська Для Піці", u: "кг", c: "🍕 Піца"}, 
-            {n: "Салямі Оригінальна для Піці", u: "кг", c: "🍕 Піца"}, {n: "Сир Дорблю для Піці", u: "кг", c: "🍕 Піца"}, {n: "Сир Камамбер", u: "кг", c: "🍕 Піца"}, 
-            {n: "Сир Маскарпоне", u: "кг", c: "🍕 Піца"}, {n: "Сир Моцарела тверда", u: "кг", c: "🍕 Піца"}, {n: "Сир Тофу", u: "кг", c: "🍕 Піца"}, 
-            {n: "Сир Хохланд", u: "кг", c: "🍕 Піца"}, {n: "Сирні Кульки філадельфія", u: "шт", c: "🍕 Піца"}, {n: "Сіль", u: "кг", c: "🥬 Інше"}, 
-            {n: "Сіроп Гренадін", u: "мл", c: "🍹 Бар"}, {n: "Сніжний краб", u: "кг", c: "🍣 Суші"}, {n: "Сок в асортименті", u: "л", c: "🍹 Бар"}, 
-            {n: "Соус Кислосолодкий", u: "л", c: "🥣 Соуси"}, {n: "Соус Кім Чі", u: "л", c: "🥣 Соуси"}, {n: "Соус Кунжутний Бургер", u: "л", c: "🥣 Соуси"}, 
-            {n: "Соус Рамен", u: "л", c: "🥣 Соуси"}, {n: "Соус Сирний для Піці", u: "л", c: "🥣 Соуси"}, {n: "Соус Соєвий Ромасяй 50гр.", u: "шт", c: "🥣 Соуси"}, 
-            {n: "Соус Унагі", u: "л", c: "🥣 Соуси"}, {n: "Соус Шрірача", u: "л", c: "🥣 Соуси"}, {n: "Соус для Піци", u: "л", c: "🥣 Соуси"}, 
-            {n: "Соус кіккоман", u: "л", c: "🥣 Соуси"}, {n: "Соус порційний для піци", u: "шт", c: "🥣 Соуси"}, {n: "Соус сирий", u: "л", c: "🥣 Соуси"}, 
-            {n: "Соус соєвий", u: "л", c: "🥣 Соуси"}, {n: "Соус спайсі", u: "л", c: "🥣 Соуси"}, {n: "Соус цезар для піци", u: "л", c: "🥣 Соуси"}, 
-            {n: "Стружка тунця", u: "кг", c: "🍣 Суші"}, {n: "Сусник великий", u: "шт", c: "📦 Упаковка"}, {n: "Сухарі Панко", u: "кг", c: "🥬 Інше"}, 
-            {n: "Сухарики для Піці", u: "кг", c: "🍕 Піца"}, {n: "Сяке Чоя (50м.)", u: "мл", c: "🍹 Бар"}, {n: "Текіла Сієрра Сільвер (50мл.)", u: "мл", c: "🍹 Бар"}, 
-            {n: "Тонік Евервесс", u: "мл", c: "🍹 Бар"}, {n: "Тримачі навчальні", u: "шт", c: "📦 Упаковка"}, {n: "Тунець", u: "кг", c: "🍣 Суші"}, 
-            {n: "Удон", u: "кг", c: "🥬 Інше"}, {n: "Упаковка 1рол. Верх", u: "шт", c: "📦 Упаковка"}, {n: "Упаковка 1рол. Низ", u: "шт", c: "📦 Упаковка"}, 
-            {n: "Упаковка Бургер: Верх", u: "шт", c: "📦 Упаковка"}, {n: "Упаковка Бургер: Низ", u: "шт", c: "📦 Упаковка"}, {n: "Упаковка картону: Верх:", u: "шт", c: "📦 Упаковка"}, 
-            {n: "Упаковка картону: Низ:", u: "шт", c: "📦 Упаковка"}, {n: "Філе бедра для Піці", u: "кг", c: "🍕 Піца"}, {n: "Фісташка для Піці", u: "кг", c: "🍕 Піца"}, 
-            {n: "Фунчоза", u: "кг", c: "🥬 Інше"}, {n: "Хамон", u: "кг", c: "🥬 Інше"}, {n: "Холодний чай", u: "л", c: "🍹 Бар"}, 
-            {n: "Хундаші", u: "кг", c: "🥬 Інше"}, {n: "Цибуля", u: "кг", c: "🥬 Інше"}, {n: "Цибуля зелена", u: "кг", c: "🥬 Інше"}, 
-            {n: "Цибуля червона для Піці", u: "кг", c: "🍕 Піца"}, {n: "Цукор", u: "кг", c: "🥬 Інше"}, {n: "Цукор в стіках", u: "шт", c: "🥬 Інше"}, 
-            {n: "Чай в асортименті", u: "шт", c: "🍹 Бар"}, {n: "Часник", u: "кг", c: "🥬 Інше"}, {n: "Чорнила Каракатиці", u: "мл", c: "🥬 Інше"}, 
-            {n: "Чіпси рисові", u: "кг", c: "🥬 Інше"}, {n: "Шинка з Білого Мяса для Піці", u: "кг", c: "🍕 Піца"}, {n: "Шинка традиційна для піци", u: "кг", c: "🍕 Піца"}, 
-            {n: "Яблука", u: "кг", c: "🥬 Інше"}, {n: "Яйце", u: "шт", c: "🥬 Інше"}
-        ];
+        const defaultRawItems=["7АП","7АП 1Л.","Авокадо","Айсберг","Ананас для Піци","Банан","Бренді Арді","Бульйон Курячий","Васабі","Васабі Ромасяй 7.5гр.","Вершки для Піци","Вино Decordi Ламбруско Напівсухе Біле (0.750л)","Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)","Вино Decordi Ламбруско Напівсухе Червоне (0.750л)","Вино Decordi Ламбруско Сухе Секо Біле (0.750л)","Вино Decordi Напівсолодке Біле (50мл.)","Вино Decordi Напівсолодке Червоне (50мл.)","Вино Decordi Сухе Червоне (50мл.)","Вино Ігристе Апостроф Брют (50мл.)","Вино ігристе Decordi Просекко (0.750л)","Вино Просекко розлив","Вино Чоя Ориджинал (50мл)","Вишня морожена","Віскі Бушмілс (50мл.)","Віскі Ват 69 (50мл.)","Віскі Гленморанж (50мл)","Віскі Джек Деніелс (50мл.)","Віскі Джек Деніелс Хані (50мл.)","Віскі Джек Деніелс Яблуко (50мл.)","Віскі Погіс (50мл.)","Віскі Ханкі Баністер (50мл.)","Вода","Вода \"Трускавецька\" (0,5л пластик)","Вода Міринда","Вода трускавецька 0,5 скл","Вода Трускавецькі 0,3 скл","Вугор","Горілка Кий","Горілка Фін (50мл.)","Горілка Фінляндія","Горілка Фінські (50мл)","Горіховий соус","Гребінець","Гриби Шиїтакі","Грудинка марочна для Піці","Десерт Моті","Джек Деніелс Яблуко","Джин Фінсбарі (50мл)","Дріжджі","Есколар масляний","Зелена цибуля","Золото","Ікра массаго Червона","Ікра тобіко","Імбір","Імбір Ромасяй 30гр.","Інарі","Кабаноссі для Піці","Кава Джемені","Каперси для Піці","Капуста Броколі","Кокосова Стружка","Коньяк Агмарті 3 роки (50мл.)","Коньяк Агмарті 5 років (50мл.)","Коньяк Хеннесі VS (50мл)","Коробка для Піці","Крамбл","Крафт-пакет","Крафтова палічка","Креветка 16/20","Крем сир для Піці","Кукурудза для Піці","Кукурудза консервована","Кунжут білий","Кунжут чорний","Куряче філе","Лайм","Лимон","Лікер Апероль (50мл.)","Лікер Бейліс (50мл.)","Лікер Єгермейстер (50мл.)","Лікер Пізан","Лікер Самбука Саутіні","Лікер Трипл Сек","Лосось копчений","Лосось філе","Майонез Провансаль","Майонез Японський","Маменорі","Манго Королівське","Манго для Піци","Мікрогрін","Мірин","Місопаста","Молоко","Морква","Морозиво в асортименті","Мука Темпура","Мука для піци","М'ята","Нитки чилі для Піці","Норі","Обліпиха морожена","Огірок","Огірок маринований для Піці","Оливки для Піци","Олія","Олія для Фритюра","Олія для піци","Омлет","Орео","Оцет рисовий","Палички","Пан Тостовий","Пармезан для Піці","Перепеліне яйце для Піці","Перець болгарський","Перець болгарський для Піці","Перець гострий","Пергамент для Піці","Пепсі","Печериці для Піці","Пиво hoegaarden (300 мл.)","Пиво stella artois (500 мл.)","Пиво stella artois Б.А (500 мл.)","Пиво Будвайзер 0.5л","Пиво Будвайзер 0.5л БА","Пиво Гамбрінус 0.5л","Пиво Клаустхаллер БА (0,5л)","Пиво Микулинецьке 0.5л","Пиво Микулинецьке 0,5 БА","Порей Цибуля","Рамен Макарон","Рисовий папір","Рис Хакумай, США","Ром Ботафого (50мл.)","Ром Капітан Морган Gold (50мл.)","Ром Капітан Морган Білий (50мл.)","Ром Карибії","Рукола","Салат айсберг для Піці","Салат чука","Салямі Італійська Для Піці","Салямі Оригінальна для Піці","Сир Дорблю для Піці","Сир Камамбер","Сир Маскарпоне","Сир Моцарела тверда","Сир Тофу","Сир Хохланд","Сирні Кульки філадельфія","Сіль","Сіроп Гренадін","Сніжний краб","Сок в асортименті","Соус Кислосолодкий","Соус Кім Чі","Соус Кунжутний Бургер","Соус Рамен","Соус Сирний для Піці","Соус Соєвий Ромасяй 50гр.","Соус Унагі","Соус Шрірача","Соус для Піци","Соус кіккоман","Соус порційний для піци","Соус сирий","Соус соєвий","Соус спайсі","Соус цезар для піци","Стружка тунця","Сусник великий","Сухарі Панко","Сухарики для Піці","Сяке Чоя (50м.)","Текіла Сієрра Сільвер (50мл.)","Тонік Евервесс","Тримачі навчальні","Тунець","Удон","Упаковка 1рол. Верх","Упаковка 1рол. Низ","Упаковка Бургер: Верх","Упаковка Бургер: Низ","Упаковка картону: Верх:","Упаковка картону: Низ:","Філе бедра для Піці","Фісташка для Піці","Фунчоза","Хамон","Холодний чай","Хундаші","Цибуля","Цибуля зелена","Цибуля червона для Піці","Цукор","Цукор в стіках","Чай в асортименті","Часник","Чорнила Каракатиці","Чіпси рисові","Шинка з Білого Мяса для Піці","Шинка традиційна для піци","Яблука","Яйце"];
+        function getCat(n) { let l=n.toLowerCase(); if(l.includes('піц')||l.includes('сир')||l.includes('шинк')) return '🍕 Піца'; if(l.includes('вино')||l.includes('пиво')||l.includes('сік')||l.includes('вода')||l.includes('віскі')) return '🍹 Бар'; if(l.includes('упаков')||l.includes('коробк')||l.includes('паличк')) return '📦 Упаковка'; if(l.includes('соус')||l.includes('васабі')||l.includes('імбір')) return '🥣 Соуси'; if(l.includes('лосось')||l.includes('вугор')||l.includes('рис')) return '🍣 Суші'; return '🥬 Інше'; }
 
-        let PRODS = JSON.parse(localStorage.getItem('romasyay_v23_prods'));
+        // ЗАВАНТАЖЕННЯ ПРОДУКТІВ (Оновив ключ для чистих даних)
+        let PRODS = JSON.parse(localStorage.getItem('romasyay_v24_prods'));
         if(!PRODS || PRODS.length < 50) { 
-            PRODS = initialProducts;
-            localStorage.setItem('romasyay_v23_prods', JSON.stringify(PRODS));
+            PRODS = defaultRawItems.map(n => ({ n, u: (n.includes('мл')||n.includes('л'))?'мл':'кг', c: getCat(n) })); 
+            localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS));
         }
 
         db.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_arc', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
@@ -293,6 +232,12 @@
             document.getElementById('categoryTabs').innerHTML = categories.map(c => `<button onclick="setCategory('${c}')" class="px-6 py-2.5 rounded-full text-sm font-black transition-all ${c===currentCat?'bg-[var(--primary)] text-white shadow-lg':'glass opacity-50'}">${c}</button>`).join('');
         }
         function setCategory(c) { currentCat = c; initCategories(); render(); }
+        
+        // ФУНКЦІЇ ДОДАВАННЯ ТА ВИДАЛЕННЯ З СПИСКУ
+        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS)); } }
+        function rst(n) { if(confirm('Обнулити '+n+'?')) { vals[n]=0; render(); if(settings.sound) playNeutralClick(); } }
+        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS)); delete vals[n]; render(); if(settings.sound) playNeutralClick(); } }
+        function clearSearch() { document.getElementById('s').value = ''; render(); if(settings.sound) playNeutralClick(); }
 
         function render() {
             let f = PRODS;
@@ -301,7 +246,28 @@
             if(q) f = f.filter(p => p.n.toLowerCase().includes(q));
 
             document.getElementById('lst').innerHTML = f.sort((a,b)=>a.n.localeCompare(b.n,'uk')).map((p, i) => `
-                <div class="glass rounded-[35px] p-6 shadow-sm"><div class="flex justify-between items-start mb-4"><div><span class="text-[10px] font-black uppercase opacity-30 tracking-widest">${p.u}</span><h3 class="text-xl font-black leading-tight">${p.n}</h3></div><div class="text-4xl font-black text-[var(--primary)]">${vals[p.n]||0}</div></div><div class="flex gap-3"><input type="number" id="inp-${i}" placeholder="0" class="w-full rounded-2xl p-5 text-center font-black text-2xl bg-white/50 dark:bg-black/20 outline-none"><button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-10 rounded-2xl text-3xl shadow-lg ios-card">✓</button></div></div>`).join('');
+                <div class="glass rounded-[35px] p-6 shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="pr-2 flex-1">
+                            <select onchange="updateUnit('${p.n}',this.value)" class="unit-select outline-none">
+                                <option value="кг" ${p.u==='кг'?'selected':''}>КГ ▾</option>
+                                <option value="шт" ${p.u==='шт'?'selected':''}>ШТ ▾</option>
+                                <option value="л" ${p.u==='л'?'selected':''}>Л ▾</option>
+                                <option value="мл" ${p.u==='мл'?'selected':''}>МЛ ▾</option>
+                            </select>
+                            <h3 class="text-xl font-black leading-tight mt-2">${p.n}</h3>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-4xl font-black text-[var(--primary)] min-w-[3rem] text-right">${vals[p.n]||0}</span>
+                            <button onclick="rst('${p.n}')" class="ios-card w-11 h-11 bg-gray-200/60 dark:bg-gray-700/60 rounded-full text-xs font-black flex items-center justify-center">✕</button>
+                            <button onclick="deleteItemLocally('${p.n}')" class="ios-card w-11 h-11 bg-red-500/10 rounded-full text-red-500 text-lg flex items-center justify-center font-black">🗑</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <input type="number" id="inp-${i}" placeholder="Кількість..." class="w-full rounded-2xl p-5 text-center font-black text-2xl bg-white/50 dark:bg-black/20 outline-none shadow-inner" onkeydown="if(event.key==='Enter')confirmBtn('${p.n}','inp-${i}')">
+                        <button onclick="confirmBtn('${p.n}','inp-${i}')" class="bg-[var(--primary)] text-white px-10 rounded-2xl text-3xl shadow-lg ios-card">✓</button>
+                    </div>
+                </div>`).join('');
         }
 
         function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value='';if(settings.sound)playNeutralClick();render();}}
@@ -316,20 +282,44 @@
             db.ref('inventories/'+r.id).set(r).then(() => { vals = {}; playPianoSuccess(); render(); alert("✅ Збережено!"); });
         }
 
+        // АРХІВ З КНОПКАМИ РЕДАГУВАННЯ
         function loadArchive() {
             let a = JSON.parse(localStorage.getItem('romasyay_arc')) || [];
             document.getElementById('arcView').innerHTML = a.reverse().map(x => `
                 <div class="glass rounded-[40px] p-8 relative mb-6">
-                    <button onclick="downloadExcel(${x.id})" class="absolute top-6 right-6 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg">📗</button>
-                    <div class="mb-4"><h4 class="font-black text-2xl">${x.user}</h4><div class="text-sm font-bold opacity-40 uppercase">${x.loc} • ${x.dt}</div></div>
+                    <div class="absolute top-6 right-6 flex gap-2">
+                        <button onclick="downloadExcel(${x.id})" class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg ios-card">📗</button>
+                        <button onclick="editArchive(${x.id})" class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg ios-card">✏️</button>
+                        <button onclick="deleteCloudArchive(${x.id})" class="w-12 h-12 bg-red-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg ios-card">🗑</button>
+                    </div>
+                    <div class="mb-4 pr-40"><h4 class="font-black text-2xl">${x.user}</h4><div class="text-sm font-bold opacity-40 uppercase">${x.loc} • ${x.dt}</div></div>
                     <div class="space-y-2 pt-4 border-t border-gray-300/20">${x.items.map(i=>`<div class="text-lg flex justify-between font-bold"><span>${i.n}</span><span class="text-[var(--primary)] font-black">${i.v} ${i.u}</span></div>`).join('')}</div>
                 </div>`).join('');
         }
 
+        function editArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; let idx = a.findIndex(x=>x.id===id); if(idx>-1) { let i = a[idx]; vals = {}; i.items.forEach(x=>vals[x.n]=x.v); document.getElementById('l').value = i.loc; a.splice(idx,1); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove(); nav('inventoryScreen'); render(); alert("✅ Завантажено для редагування."); } }
+        function deleteCloudArchive(id) { if(prompt("Пароль:")!=="100200300") return alert("❌ Невірний пароль!"); if(!confirm("Видалити назавжди?")) return; let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; a = a.filter(x=>x.id!==id); localStorage.setItem('romasyay_arc', JSON.stringify(a)); db.ref('inventories/'+id).remove().then(()=>{ loadArchive(); if(settings.sound) playNeutralClick(); }); }
+
         function playNeutralClick() { if(navigator.vibrate) navigator.vibrate(8); try { let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=1200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.05)}catch(e){}}
         function playPianoSuccess() { try { let c=new(window.AudioContext||window.webkitAudioContext)(),t=c.currentTime;[523,659,1046].forEach((f,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+i*0.15+0.05);g.gain.linearRampToValueAtTime(0,t+i*0.15+0.6);o.connect(g);g.connect(c.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.7)})}catch(e){}}
+        
         function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
         function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
+        
+        // ПОВЕРНУТО ЗБЕРЕЖЕННЯ І ЗАКРИТТЯ
+        function saveNewItem() { 
+            const n = document.getElementById('newItemName').value.trim();
+            const u = document.getElementById('newItemUnit').value;
+            if(!n) return alert("Введіть назву!");
+            if(PRODS.some(p => p.n.toLowerCase() === n.toLowerCase())) return alert("Вже є в базі!");
+            PRODS.push({n, u, c: getCat(n)});
+            localStorage.setItem('romasyay_v24_prods', JSON.stringify(PRODS));
+            closeAddModal();
+            document.getElementById('newItemName').value = '';
+            render();
+            if(settings.sound) playNeutralClick();
+        }
+
         function toggleSearch() { const c=document.getElementById('searchBarContainer'); c.classList.toggle('hidden'); if(!c.classList.contains('hidden')) document.getElementById('s').focus(); }
         function downloadExcel(id) { let a=JSON.parse(localStorage.getItem('romasyay_arc')),i=a.find(x=>x.id===id); let d=[["Товар","Кількість","Од."]]; i.items.forEach(x=>d.push([x.n,x.v,x.u])); let s=XLSX.utils.aoa_to_sheet(d),b=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(b,s,"Inventory"); XLSX.writeFile(b,`Inventory_${i.loc}_${i.dt}.xlsx`); }
 
