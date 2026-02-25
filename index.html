@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Ромасяй">
     <link rel="apple-touch-icon" href="https://iili.io/qKRx5xI.png">
     <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
-    <title>Ромасяй Cloud v27</title>
+    <title>Ромасяй Cloud v28</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> tailwind.config = { darkMode: 'class' } </script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -93,10 +93,8 @@
                 <p class="text-[11px] font-black opacity-30 uppercase tracking-[0.4em] mt-3">Cloud Inventory</p>
             </div>
             <div class="grid grid-cols-2 gap-4 relative">
-                <button onclick="startInventoryFlow()" class="menu-card glass p-10 rounded-[40px] flex flex-col items-center justify-center gap-4 ios-card col-span-2 shadow-sm relative overflow-hidden">
-                    <div class="absolute inset-0 bg-[var(--primary)] opacity-5"></div>
-                    <span class="text-5xl">📝</span><span class="font-black text-xl text-center" data-i18n="newInv">Нова інвентаризація</span>
-                </button>
+                <div id="mainActionButtons" class="col-span-2 flex gap-4 w-full menu-card"></div>
+
                 <button onclick="nav('archiveScreen'); loadArchive();" class="menu-card glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">📦</span><span class="font-black" data-i18n="archive">Архів</span></button>
                 <button onclick="nav('settingsScreen')" class="menu-card glass p-7 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm"><span class="text-3xl">⚙️</span><span class="font-black" data-i18n="settings">Опції</span></button>
                 <button onclick="nav('aboutScreen')" class="menu-card glass p-6 rounded-[35px] flex items-center justify-center gap-3 ios-card col-span-2 shadow-sm"><span class="text-2xl">ℹ️</span><span class="font-black text-sm uppercase tracking-widest opacity-70" data-i18n="about">Про додаток</span></button>
@@ -130,14 +128,15 @@
             <div class="w-full overflow-x-auto flex gap-3 px-6 mt-5 hide-scrollbar" id="categoryTabs"></div>
         </header>
         <main class="scroll-area px-5 pt-6 space-y-5">
-            <div class="glass rounded-[35px] p-5 flex justify-between items-center shadow-sm">
+            <div class="glass rounded-[35px] p-4 flex justify-between items-center shadow-sm">
                 <div class="pl-2">
                     <span class="text-[10px] font-black opacity-30 uppercase tracking-widest block mb-1" data-i18n="loc">Локація</span>
-                    <select id="l" onchange="saveSession()" class="bg-transparent font-black outline-none text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
+                    <select id="l" onchange="saveSession()" class="bg-transparent font-black outline-none text-xl lg:text-2xl text-[var(--primary)]"><option>Трускавець</option><option>Борислав</option><option>Дрогобич</option></select>
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="sendToTelegram()" class="glass w-14 h-14 flex items-center justify-center rounded-2xl text-2xl ios-card shadow-sm">✈️</button>
-                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-lg ios-card">💾</button>
+                <div class="flex gap-2">
+                    <button onclick="resetInventory()" class="glass w-12 h-12 flex items-center justify-center rounded-2xl text-xl ios-card shadow-sm text-red-500">🗑️</button>
+                    <button onclick="sendToTelegram()" class="glass w-12 h-12 flex items-center justify-center rounded-2xl text-xl ios-card shadow-sm">✈️</button>
+                    <button onclick="saveData()" class="bg-[var(--primary)] text-white w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-lg ios-card">💾</button>
                 </div>
             </div>
             <div id="lst" class="space-y-4"></div>
@@ -203,7 +202,7 @@
                 <p class="font-bold opacity-80 leading-relaxed mb-4" data-i18n="aboutP1">Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.</p>
                 <p class="font-bold opacity-80 leading-relaxed" data-i18n="aboutP2">Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢.</p>
             </div>
-            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v27</p>
+            <p class="opacity-30 font-black text-[10px] tracking-widest uppercase">Version 1.0 Masterpiece v28</p>
         </main>
     </div>
 
@@ -226,10 +225,10 @@
         const defaultRawItems=["7АП","7АП 1Л.","Авокадо","Айсберг","Ананас для Піци","Банан","Бренді Арді","Бульйон Курячий","Васабі","Васабі Ромасяй 7.5гр.","Вершки для Піци","Вино Decordi Ламбруско Напівсухе Біле (0.750л)","Вино Decordi Ламбруско Напівсухе Рожеве (0.750л)","Вино Decordi Ламбруско Напівсухе Червоне (0.750л)","Вино Decordi Ламбруско Сухе Секо Біле (0.750л)","Вино Decordi Напівсолодке Біле (50мл.)","Вино Decordi Напівсолодке Червоне (50мл.)","Вино Decordi Сухе Червоне (50мл.)","Вино Ігристе Апостроф Брют (50мл.)","Вино ігристе Decordi Просекко (0.750л)","Вино Просекко розлив","Вино Чоя Ориджинал (50мл)","Вишня морожена","Віскі Бушмілс (50мл.)","Віскі Ват 69 (50мл.)","Віскі Гленморанж (50мл)","Віскі Джек Деніелс (50мл.)","Віскі Джек Деніелс Хані (50мл.)","Віскі Джек Деніелс Яблуко (50мл.)","Віскі Погіс (50мл.)","Віскі Ханкі Баністер (50мл.)","Вода","Вода \"Трускавецька\" (0,5л пластик)","Вода Міринда","Вода трускавецька 0,5 скл","Вода Трускавецькі 0,3 скл","Вугор","Горілка Кий","Горілка Фін (50мл.)","Горілка Фінляндія","Горілка Фінські (50мл)","Горіховий соус","Гребінець","Гриби Шиїтакі","Грудинка марочна для Піці","Десерт Моті","Джек Деніелс Яблуко","Джин Фінсбарі (50мл)","Дріжджі","Есколар масляний","Зелена цибуля","Золото","Ікра массаго Червона","Ікра тобіко","Імбір","Імбір Ромасяй 30гр.","Інарі","Кабаноссі для Піці","Кава Джемені","Каперси для Піці","Капуста Броколі","Кокосова Стружка","Коньяк Агмарті 3 роки (50мл.)","Коньяк Агмарті 5 років (50мл.)","Коньяк Хеннесі VS (50мл)","Коробка для Піці","Крамбл","Крафт-пакет","Крафтова палічка","Креветка 16/20","Крем сир для Піці","Кукурудза для Піці","Кукурудза консервована","Кунжут білий","Кунжут чорний","Куряче філе","Лайм","Лимон","Лікер Апероль (50мл.)","Лікер Бейліс (50мл.)","Лікер Єгермейстер (50мл.)","Лікер Пізан","Лікер Самбука Саутіні","Лікер Трипл Сек","Лосось копчений","Лосось філе","Майонез Провансаль","Майонез Японський","Маменорі","Манго Королівське","Манго для Піци","Мікрогрін","Мірин","Місопаста","Молоко","Морква","Морозиво в асортименті","Мука Темпура","Мука для піци","М'ята","Нитки чилі для Піці","Норі","Обліпиха морожена","Огірок","Огірок маринований для Піці","Оливки для Піци","Олія","Олія для Фритюра","Олія для піци","Омлет","Орео","Оцет рисовий","Палички","Пан Тостовий","Пармезан для Піці","Перепеліне яйце для Піці","Перець болгарський","Перець болгарський для Піці","Перець гострий","Пергамент для Піці","Пепсі","Печериці для Піці","Пиво hoegaarden (300 мл.)","Пиво stella artois (500 мл.)","Пиво stella artois Б.А (500 мл.)","Пиво Будвайзер 0.5л","Пиво Будвайзер 0.5л БА","Пиво Гамбрінус 0.5л","Пиво Клаустхаллер БА (0,5л)","Пиво Микулинецьке 0.5л","Пиво Микулинецьке 0,5 БА","Порей Цибуля","Рамен Макарон","Рисовий папір","Рис Хакумай, США","Ром Ботафого (50мл.)","Ром Капітан Морган Gold (50мл.)","Ром Капітан Морган Білий (50мл.)","Ром Карибії","Рукола","Салат айсберг для Піці","Салат чука","Салямі Італійська Для Піці","Салямі Оригінальна для Піці","Сир Дорблю для Піці","Сир Камамбер","Сир Маскарпоне","Сир Моцарела тверда","Сир Тофу","Сир Хохланд","Сирні Кульки філадельфія","Сіль","Сіроп Гренадін","Сніжний краб","Сок в асортименті","Соус Кислосолодкий","Соус Кім Чі","Соус Кунжутний Бургер","Соус Рамен","Соус Сирний для Піці","Соус Соєвий Ромасяй 50гр.","Соус Унагі","Соус Шрірача","Соус для Піци","Соус кіккоман","Соус порційний для піци","Соус сирий","Соус соєвий","Соус спайсі","Соус цезар для піци","Стружка тунця","Сусник великий","Сухарі Панко","Сухарики для Піці","Сяке Чоя (50м.)","Текіла Сієрра Сільвер (50мл.)","Тонік Евервесс","Тримачі навчальні","Тунець","Удон","Упаковка 1рол. Верх","Упаковка 1рол. Низ","Упаковка Бургер: Верх","Упаковка Бургер: Низ","Упаковка картону: Верх:","Упаковка картону: Низ:","Філе бедра для Піці","Фісташка для Піці","Фунчоза","Хамон","Холодний чай","Хундаші","Цибуля","Цибуля зелена","Цибуля червона для Піці","Цукор","Цукор в стіках","Чай в асортименті","Часник","Чорнила Каракатиці","Чіпси рисові","Шинка з Білого Мяса для Піці","Шинка традиційна для піци","Яблука","Яйце"];
         function getCat(n) { let l=n.toLowerCase(); if(l.includes('піц')||l.includes('сир')||l.includes('шинк')) return '🍕 Піца'; if(l.includes('вино')||l.includes('пиво')||l.includes('сік')||l.includes('вода')||l.includes('віскі')||l.includes('лікер')||l.includes('ром')||l.includes('тонік')||l.includes('чай')) return '🍹 Бар'; if(l.includes('упаков')||l.includes('коробк')||l.includes('паличк')||l.includes('пакет')) return '📦 Упаковка'; if(l.includes('соус')||l.includes('васабі')||l.includes('імбір')||l.includes('олія')) return '🥣 Соуси'; if(l.includes('лосось')||l.includes('вугор')||l.includes('рис')||l.includes('норі')) return '🍣 Суші'; return '🥬 Інше'; }
 
-        let PRODS = JSON.parse(localStorage.getItem('romasyay_v27_prods'));
+        let PRODS = JSON.parse(localStorage.getItem('romasyay_v28_prods'));
         if(!PRODS || PRODS.length < 50) { 
             PRODS = defaultRawItems.map(n => ({ n, u: (n.includes('мл')||n.includes('л'))?'мл':'кг', c: getCat(n) })); 
-            localStorage.setItem('romasyay_v27_prods', JSON.stringify(PRODS));
+            localStorage.setItem('romasyay_v28_prods', JSON.stringify(PRODS));
         }
 
         db.ref('inventories').on('value', (s) => { const d = s.val(); localStorage.setItem('romasyay_arc', JSON.stringify(d ? Object.values(d).sort((a,b)=>a.id-b.id) : [])); if(document.getElementById('archiveScreen').classList.contains('active')) loadArchive(); });
@@ -241,8 +240,8 @@
         let startupPlayed = false;
 
         const i18n = {
-            uk: { tapToStart: "👆 ТОРКНІТЬСЯ", newInv: "Нова інвентаризація", archive: "Архів", settings: "Опції", settingsTitle: "Налаштування", about: "Про додаток", who: "Хто працює?", loc: "Локація", sound: "Звукові ефекти", soundDesc: "Мелодії та кліки", haptic: "Вібровідгук", hapticDesc: "Тактильна віддача", theme: "Тема оформлення", lang: "Мова", logout: "Вийти", newItem: "Новий товар", cancel: "Відміна", add: "Додати", aboutP1: "Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.", aboutP2: "Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢." },
-            en: { tapToStart: "👆 TAP TO START", newInv: "New Inventory", archive: "Archive", settings: "Settings", settingsTitle: "Settings", about: "About app", who: "Who is working?", loc: "Location", sound: "Sound Effects", soundDesc: "Melodies & clicks", haptic: "Haptic Feedback", hapticDesc: "Tactile response", theme: "Theme", lang: "Language", logout: "Logout", newItem: "New Item", cancel: "Cancel", add: "Add", aboutP1: "This app is not just code, but a true digital masterpiece, forged in the fire of deadlines and sleepless nights on pure enthusiasm.", aboutP2: "Anton dared to develop it when he realized that counting goods on paper in the third millennium is like trying to light a fire by rubbing two sushi sticks 🥢." }
+            uk: { tapToStart: "👆 ТОРКНІТЬСЯ", newInv: "Нова інвентаризація", continueInv: "Продовжити", new: "Нова", archive: "Архів", settings: "Опції", settingsTitle: "Налаштування", about: "Про додаток", who: "Хто працює?", loc: "Локація", sound: "Звукові ефекти", soundDesc: "Мелодії та кліки", haptic: "Вібровідгук", hapticDesc: "Тактильна віддача", theme: "Тема оформлення", lang: "Мова", logout: "Вийти", newItem: "Новий товар", cancel: "Відміна", add: "Додати", aboutP1: "Цей додаток — не просто набір коду, а справжній цифровий шедевр, викуваний у вогні дедлайнів та безсонних ночей на чистому ентузіазмі.", aboutP2: "Антон наважився на його розробку, коли зрозумів, що рахувати товари на папірцях у третьому тисячолітті — це як намагатися запалити вогонь тертям двох суші-паличок 🥢." },
+            en: { tapToStart: "👆 TAP TO START", newInv: "New Inventory", continueInv: "Continue", new: "New", archive: "Archive", settings: "Settings", settingsTitle: "Settings", about: "About app", who: "Who is working?", loc: "Location", sound: "Sound Effects", soundDesc: "Melodies & clicks", haptic: "Haptic Feedback", hapticDesc: "Tactile response", theme: "Theme", lang: "Language", logout: "Logout", newItem: "New Item", cancel: "Cancel", add: "Add", aboutP1: "This app is not just code, but a true digital masterpiece, forged in the fire of deadlines and sleepless nights on pure enthusiasm.", aboutP2: "Anton dared to develop it when he realized that counting goods on paper in the third millennium is like trying to light a fire by rubbing two sushi sticks 🥢." }
         };
 
         function setLang(l) {
@@ -252,6 +251,7 @@
             
             document.getElementById('lang-uk').className = `flex-1 py-3 rounded-xl font-black text-sm transition-all z-10 ios-card ${l==='uk' ? 'bg-white dark:bg-gray-800 shadow-sm text-[var(--primary)]' : 'opacity-50'}`;
             document.getElementById('lang-en').className = `flex-1 py-3 rounded-xl font-black text-sm transition-all z-10 ios-card ${l==='en' ? 'bg-white dark:bg-gray-800 shadow-sm text-[var(--primary)]' : 'opacity-50'}`;
+            updateMenuState();
             if(settings.sound) playNeutralClick();
         }
 
@@ -287,9 +287,22 @@
         }
         function setCategory(c) { currentCat = c; initCategories(); render(); }
         
-        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v27_prods', JSON.stringify(PRODS)); } }
-        function rst(n) { if(confirm('Обнулити '+n+'?')) { vals[n]=0; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
-        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v27_prods', JSON.stringify(PRODS)); delete vals[n]; saveSession(); render(); if(settings.sound) playNeutralClick(); } }
+        function updateUnit(n,u) { let i = PRODS.find(p=>p.n===n); if(i) { i.u=u; localStorage.setItem('romasyay_v28_prods', JSON.stringify(PRODS)); } }
+        
+        function rst(n) { if(confirm('Обнулити '+n+'?')) { vals[n]=0; saveSession(); updateMenuState(); render(); if(settings.sound) playNeutralClick(); } }
+        
+        function resetInventory() {
+            if(Object.keys(vals).length === 0) return alert("Інвентаризація і так порожня!");
+            if(confirm("🚨 УВАГА! Ви впевнені, що хочете повністю обнулити поточну інвентаризацію? Всі незбережені дані зникнуть!")) {
+                vals = {};
+                saveSession();
+                updateMenuState();
+                render();
+                if(settings.sound) playNeutralClick();
+            }
+        }
+
+        function deleteItemLocally(n) { if(confirm(`Видалити "${n}" назавжди зі списку?`)) { PRODS = PRODS.filter(p=>p.n!==n); localStorage.setItem('romasyay_v28_prods', JSON.stringify(PRODS)); delete vals[n]; saveSession(); updateMenuState(); render(); if(settings.sound) playNeutralClick(); } }
         function clearSearch() { document.getElementById('s').value = ''; render(); if(settings.sound) playNeutralClick(); }
 
         function render() {
@@ -323,9 +336,63 @@
                 </div>`).join('');
         }
 
-        function confirmBtn(n,id) { const i = document.getElementById(id); let v = parseFloat(i.value)||0; if(v!==0){vals[n]=(vals[n]||0)+v;i.value=''; saveSession(); if(settings.sound)playNeutralClick();render();}}
-        function startInventoryFlow() { if(currentUser) nav('inventoryScreen'); else nav('specialistScreen'); }
-        function setUserAndStart(n) { currentUser = n; document.getElementById('displayUserMenu').innerText = n; document.getElementById('displayUser').innerText = n; document.getElementById('userBadgeContainer').classList.remove('hidden'); nav('inventoryScreen'); render(); }
+        // ВИПРАВЛЕНО БАГ З ДРОБОВИМИ ЧИСЛАМИ (Math Bug Fix)
+        function confirmBtn(n,id) { 
+            const i = document.getElementById(id); 
+            let v = parseFloat(i.value) || 0; 
+            if(v !== 0){
+                vals[n] = parseFloat(((vals[n] || 0) + v).toFixed(3)); // Ідеальне округлення до 3 знаків
+                i.value = ''; 
+                saveSession(); 
+                updateMenuState();
+                if(settings.sound) playNeutralClick();
+                render();
+            }
+        }
+
+        // РОЗУМНЕ ГОЛОВНЕ МЕНЮ
+        function updateMenuState() {
+            const container = document.getElementById('mainActionButtons');
+            const hasData = Object.keys(vals).length > 0;
+            const l = settings.lang || 'uk';
+            
+            if(hasData) {
+                container.innerHTML = `
+                    <button onclick="continueInventory()" class="flex-1 glass py-8 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm border-2 border-[var(--primary)] bg-[var(--primary)]/5">
+                        <span class="text-4xl">▶️</span><span class="font-black text-sm text-center">${i18n[l].continueInv}</span>
+                    </button>
+                    <button onclick="startNewInventory()" class="flex-1 glass py-8 rounded-[35px] flex flex-col items-center justify-center gap-3 ios-card shadow-sm">
+                        <span class="text-4xl">🆕</span><span class="font-black text-sm text-center">${i18n[l].new}</span>
+                    </button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="startNewInventory()" class="w-full glass p-10 rounded-[40px] flex flex-col items-center justify-center gap-4 ios-card shadow-sm relative overflow-hidden bg-[var(--primary)]/5">
+                        <div class="absolute inset-0 bg-[var(--primary)] opacity-5"></div>
+                        <span class="text-5xl">📝</span><span class="font-black text-xl text-center">${i18n[l].newInv}</span>
+                    </button>
+                `;
+            }
+        }
+
+        function continueInventory() { if(currentUser) nav('inventoryScreen'); else nav('specialistScreen'); }
+        function startNewInventory() { 
+            if(Object.keys(vals).length > 0) {
+                if(!confirm("Є незбережені дані! Видалити їх і почати нову?")) return;
+                vals = {}; saveSession(); updateMenuState(); render();
+            }
+            if(currentUser) { nav('inventoryScreen'); render(); } else { nav('specialistScreen'); }
+        }
+
+        function setUserAndStart(n) { 
+            currentUser = n; 
+            document.getElementById('displayUserMenu').innerText = n; 
+            document.getElementById('displayUser').innerText = n; 
+            document.getElementById('userBadgeContainer').classList.remove('hidden'); 
+            nav('inventoryScreen'); 
+            render(); 
+        }
+
         function logout() { currentUser = ""; document.getElementById('userBadgeContainer').classList.add('hidden'); nav('menuScreen'); }
         
         function saveData() {
@@ -334,7 +401,7 @@
             const r = {id:Date.now(), user:currentUser, loc:document.getElementById('l').value, dt:new Date().toLocaleString('uk-UA'), items};
             let a = JSON.parse(localStorage.getItem('romasyay_arc')) || []; a.push(r); localStorage.setItem('romasyay_arc', JSON.stringify(a));
             db.ref('inventories/'+r.id).set(r).catch(e => console.error(e));
-            vals = {}; saveSession(); playPianoSuccess(); render(); setTimeout(() => alert("✅ Збережено в хмару!"), 300);
+            vals = {}; saveSession(); updateMenuState(); playPianoSuccess(); render(); setTimeout(() => alert("✅ Збережено в хмару!"), 300);
         }
 
         function sendToTelegram() {
@@ -369,12 +436,13 @@
                     vals[x.n] = x.v;
                     if(!PRODS.some(p => p.n === x.n)) { PRODS.push({n: x.n, u: x.u, c: getCat(x.n)}); }
                 }); 
-                localStorage.setItem('romasyay_v27_prods', JSON.stringify(PRODS)); 
+                localStorage.setItem('romasyay_v28_prods', JSON.stringify(PRODS)); 
                 document.getElementById('l').value = i.loc; 
                 a.splice(idx,1); 
                 localStorage.setItem('romasyay_arc', JSON.stringify(a)); 
                 db.ref('inventories/'+id).remove(); 
                 saveSession(); 
+                updateMenuState();
                 nav('inventoryScreen'); 
                 render(); 
                 alert("✅ Завантажено для редагування."); 
@@ -406,7 +474,7 @@
         function saveNewItem() { 
             const n = document.getElementById('newItemName').value.trim(); const u = document.getElementById('newItemUnit').value;
             if(!n) return alert("Введіть назву!"); if(PRODS.some(p => p.n.toLowerCase() === n.toLowerCase())) return alert("Вже є в базі!");
-            PRODS.push({n, u, c: getCat(n)}); localStorage.setItem('romasyay_v27_prods', JSON.stringify(PRODS)); closeAddModal(); document.getElementById('newItemName').value = ''; 
+            PRODS.push({n, u, c: getCat(n)}); localStorage.setItem('romasyay_v28_prods', JSON.stringify(PRODS)); closeAddModal(); document.getElementById('newItemName').value = ''; 
             setCategory('Усі');
             if(settings.sound) playNeutralClick();
         }
@@ -418,6 +486,7 @@
             applyTheme(); 
             setLang(settings.lang || 'uk');
             initCategories(); 
+            updateMenuState();
             render(); 
             let savedLoc = localStorage.getItem('romasyay_current_loc');
             if(savedLoc) document.getElementById('l').value = savedLoc;
